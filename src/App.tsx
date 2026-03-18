@@ -119,7 +119,7 @@ const people = {
       name: 'Abhinav Dhall',
       affiliation: 'Monash University',
       image: '/people/abhinav-dhall.jpg',
-      href: 'https://sites.google.com/site/dhallabhinav/',
+      href: 'https://research.monash.edu/en/persons/abhinav-dhall/',
     },
     {
       name: 'Shreya Ghosh',
@@ -137,7 +137,7 @@ const people = {
       name: 'Jianfei Cai',
       affiliation: 'Monash University',
       image: '/people/jianfei-cai.jpg',
-      href: 'https://jianfei-cai.github.io/',
+      href: 'https://research.monash.edu/en/persons/jianfei-cai/',
     },
     {
       name: 'Usman Tariq',
