@@ -134,6 +134,12 @@ const people = {
       href: 'https://mbzuai.ac.ae/study/faculty/muhammad-haris-khan/',
     },
     {
+      name: 'Jianfei Cai',
+      affiliation: 'Monash University',
+      image: '/people/jianfei-cai.jpg',
+      href: 'https://jianfei-cai.github.io/',
+    },
+    {
       name: 'Usman Tariq',
       affiliation: 'American University of Sharjah',
       image: '/people/usman-tariq.jpeg',
