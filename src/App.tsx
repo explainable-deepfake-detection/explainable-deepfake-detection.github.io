@@ -24,7 +24,7 @@ const LINKS = {
   dataset: '',
   baseline: '',
   leaderboard: '',
-  registrationForm: 'https://forms.office.com/r/gWypG9JGpe',
+  registrationForm: '', //'https://forms.office.com/r/gWypG9JGpe',
   eula: '',
   paperTemplate: '',
   contactAbhinav: 'mailto:Abhinav.dhall@monash.edu',
@@ -360,7 +360,7 @@ function App() {
             <SectionHeader
               eyebrow="Overview"
               title="Challenge Description"
-              // text="Deepfake detection is increasingly moving beyond simple face swaps toward rich semantic manipulations. This challenge focuses on both identifying manipulated content and explaining model decisions."
+              text=""
             />
 
             <div className="content-card large-card">
