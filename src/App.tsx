@@ -365,8 +365,15 @@ function App() {
 
             <div className="content-card large-card">
               <p>
-                Deepfake detection is increasingly moving beyond simple face swaps toward rich semantic manipulations. This challenge focuses on both identifying manipulated content and explaining model decisions.              </p>
-
+                Deepfake detection is increasingly moving beyond simple face swaps toward rich semantic manipulations. 
+                This challenge focuses on both identifying manipulated content and explaining model decisions. 
+                </p>
+                <p>
+                  Built on top of MultiFakeVerse, the benchmark includes two tasks: Deepfake Detection, 
+                  where the goal is to identify whether an image is real or fake, and Deepfake Explanation, 
+                  where the goal is to explain the model’s decision with respect to the manipulation. 
+                  The goal is to encourage research on deepfake systems that are both accurate and interpretable.
+                </p>
               {/* <p>
                 As deepfakes evolve from simple facial swaps to rich, context-aware
                 manipulations driven by large-scale generative models, the core
