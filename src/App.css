@@ -193,12 +193,20 @@ img {
   max-width: 66ch;
 }
 
-.hero-actions,
-.registration-actions {
+.hero-actions {
   display: flex;
   gap: 14px;
   flex-wrap: wrap;
   margin-top: 28px;
+}
+
+.registration-actions {
+  margin-top: auto;
+  padding-top: 28px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .button {
@@ -329,8 +337,7 @@ img {
 .card-grid.two-up,
 .people-grid,
 .faq-grid,
-.contact-grid,
-.registration-grid {
+.contact-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
@@ -388,6 +395,9 @@ img {
 
 .registration-card {
   min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .registration-step-label {
@@ -587,6 +597,13 @@ img {
   .registration-grid {
     grid-template-columns: 1fr;
   }
+}
+
+.registration-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  align-items: stretch;
 }
 
 @media (max-width: 720px) {

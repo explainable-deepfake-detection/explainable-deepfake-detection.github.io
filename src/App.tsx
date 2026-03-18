@@ -24,7 +24,7 @@ const LINKS = {
   dataset: '',
   baseline: '',
   leaderboard: '',
-  registrationForm: '',
+  registrationForm: 'https://forms.office.com/r/gWypG9JGpe',
   eula: '',
   paperTemplate: '',
   contactAbhinav: 'mailto:Abhinav.dhall@monash.edu',
@@ -360,20 +360,14 @@ function App() {
             <SectionHeader
               eyebrow="Overview"
               title="Challenge Description"
-              text="Deepfake detection is increasingly moving beyond simple face swaps toward rich semantic manipulations. This challenge focuses on both identifying manipulated content and explaining model decisions."
+              // text="Deepfake detection is increasingly moving beyond simple face swaps toward rich semantic manipulations. This challenge focuses on both identifying manipulated content and explaining model decisions."
             />
 
             <div className="content-card large-card">
               <p>
-                The rapid advancement of Generative AI has fundamentally reshaped how
-                visual content is produced, circulated, and consumed. Recent diffusion
-                and vision-language models can fabricate highly persuasive,
-                photorealistic deepfakes that extend far beyond identity alterations,
-                enabling manipulations of human actions, intent, object interactions,
-                and scene-level semantics.
-              </p>
+                Deepfake detection is increasingly moving beyond simple face swaps toward rich semantic manipulations. This challenge focuses on both identifying manipulated content and explaining model decisions.              </p>
 
-              <p>
+              {/* <p>
                 As deepfakes evolve from simple facial swaps to rich, context-aware
                 manipulations driven by large-scale generative models, the core
                 challenge facing the multimedia community is no longer detection alone
@@ -388,7 +382,7 @@ function App() {
                 challenge is motivated by MultiFakeVerse and related challenge
                 resources, with data and materials to be released through the official
                 challenge website.
-              </p>
+              </p> */}
             </div>
           </div>
         </section>
@@ -462,19 +456,22 @@ function App() {
                   For participating in the challenge, the first step is to register your
                   team. Please complete the form with the required information.
                 </p>
+                {'\n'}
 
-                {hasLink(LINKS.registrationForm) ? (
-                  <a
-                    href={LINKS.registrationForm}
-                    className="button button-primary"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Open registration form <ArrowRight size={18} />
-                  </a>
-                ) : (
-                  <span className="status-pill large">Coming soon</span>
-                )}
+                <div className="registration-actions">
+                  {hasLink(LINKS.registrationForm) ? (
+                    <a
+                      href={LINKS.registrationForm}
+                      className="button button-primary"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Open registration form <ArrowRight size={18} />
+                    </a>
+                  ) : (
+                    <span className="status-pill large">Coming soon</span>
+                  )}
+                </div>
               </article>
 
               <article className="content-card registration-card">
@@ -486,16 +483,15 @@ function App() {
                 </p>
 
                 <p>
-                  Please email the signed EULA to{' '}
-                  <a href="mailto:Abhinav.dhall@monash.edu" className="inline-link">
-                    Abhinav Dhall
+                  Please email the signed EULA to {' '}
+                  <a href="mailto:abhinav.dhall@monash.edu" className="inline-link">
+                    abhinav.dhall@monash.edu
                   </a>
-                  {/* {' '}
+                  {' '}
                   and{' '}
-                  <a href="mailto:abhijeet.narang1@monash.edu" className="inline-link">
-                    Abhijeet Narang
-                  </a> */}
-                  .
+                  <a href="mailto:explainable.deepfakes.challenge@gmail.com" className="inline-link">
+                     explainable.deepfakes.challenge@gmail.com
+                  </a>
                 </p>
 
                 <div className="registration-actions">
