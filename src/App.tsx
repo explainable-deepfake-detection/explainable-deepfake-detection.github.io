@@ -24,8 +24,8 @@ const LINKS = {
   dataset: '',
   baseline: '',
   leaderboard: '',
-  registrationForm: '', //'https://forms.office.com/r/gWypG9JGpe',
-  eula: '',
+  registrationForm: 'https://forms.office.com/r/gWypG9JGpe',
+  eula: 'docs/EULA_Explainable_Deepfake_Detection_Challenge_2026.pdf',
   paperTemplate: '',
   contactAbhinav: 'mailto:Abhinav.dhall@monash.edu',
   contactAbhijeet: 'mailto:abhijeet.narang1@monash.edu',
@@ -505,7 +505,7 @@ function App() {
                   {hasLink(LINKS.eula) ? (
                     <a
                       href={LINKS.eula}
-                      className="button button-secondary"
+                      className="button button-primary"
                       target="_blank"
                       rel="noreferrer"
                     >
