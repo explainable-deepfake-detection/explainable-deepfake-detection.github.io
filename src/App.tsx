@@ -160,6 +160,44 @@ const people = {
       href: 'https://kjaerstuisk.github.io/kartikkuckreja.github.io/',
     },
   ],
+  programCommittee: [
+    {
+      name: 'Junichi Yamagishi',
+      affiliation: 'National Institute of Informatics, Tokyo, Japan',
+      image: '/people/junichi-yamagishi.png',
+      href: 'https://www.nii.ac.jp/en/faculty/digital_content/yamagishi_junichi/',
+    },
+    {
+      name: 'Zhixi Cai',
+      affiliation: 'Monash University',
+      image: '/people/zhixi-cai.png',
+      href: 'https://profile.controlnet.space/',
+    },
+    {
+      name: 'Shahroz Tariq',
+      affiliation: 'CSIRO Data61',
+      image: '/people/shahroz-tariq.png',
+      href: 'https://people.csiro.au/T/S/shahroz-tariq',
+    },
+    {
+      name: 'Sebastiano Battiato',
+      affiliation: 'Università di Catania',
+      image: '/people/sebastiano-battiato.png',
+      href: 'https://www.dmi.unict.it/~battiato/',
+    },
+    {
+      name: 'Luca Guarnera',
+      affiliation: 'Università di Catania',
+      image: '/people/luca-guarnera.png',
+      href: 'https://web.dmi.unict.it/faculty/luca.guarnera',
+    },
+    {
+      name: 'Aditya Nigam',
+      affiliation: 'IIT Mandi',
+      image: '/people/aditya-nigam.png',
+      href: 'https://faculty.iitmandi.ac.in/~aditya/',
+    }
+  ],
 };
 
 const faq = [
@@ -551,7 +589,7 @@ function App() {
             <SectionHeader
               eyebrow="People"
               title="People"
-              text="Challenge organizers and data chairs."
+              text="Challenge organizers, data chairs, and program committee."
             />
 
             <div className="people-block">
@@ -567,6 +605,15 @@ function App() {
               <div className="people-subheading">Data Chairs</div>
               <div className="people-grid">
                 {people.dataChairs.map((person) => (
+                  <PersonCard key={person.name} {...person} />
+                ))}
+              </div>
+            </div>
+
+            <div className="people-block">
+              <div className="people-subheading">Program Committee</div>
+              <div className="people-grid">
+                {people.programCommittee.map((person) => (
                   <PersonCard key={person.name} {...person} />
                 ))}
               </div>
