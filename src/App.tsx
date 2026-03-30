@@ -1,115 +1,107 @@
+import type { LucideIcon } from 'lucide-react';
 import {
   ArrowRight,
   ClipboardPenLine,
   Database,
   ExternalLink,
-  FileText,
   Github,
   Mail,
   ShieldCheck,
   Sparkles,
 } from 'lucide-react';
 
-const SHOW_FAQ = false;
+const DATASET = {
+  name: 'XPlainVerse',
+  repoId: 'Abhijeet8901/XPlainVerse',
+  totalImages: '560,000',
+  totalReal: '180,000',
+  totalFake: '380,000',
+};
 
 const SITE = {
-  shortTitle: 'Deepfake Explainability Challenge 2026',
+  shortTitle: 'Explainable Deepfake Detection Challenge 2026',
   title: 'ACM MM 2026 Grand Challenge',
   subtitle:
-    'A challenge on deepfake detection and explanation.',
+    'A challenge on image-level deepfake detection and grounded explanation generation.',
   location: 'ACM Multimedia 2026',
 };
 
 const LINKS = {
-  dataset: '',
+  dataset: 'https://huggingface.co/datasets/Abhijeet8901/XPlainVerse',
   baseline: '',
-  leaderboard: '',
   registrationForm: 'https://forms.office.com/r/gWypG9JGpe',
   eula: 'docs/EULA_Explainable_Deepfake_Detection_Challenge_2026.pdf',
-  paperTemplate: '',
   contactAbhinav: 'mailto:Abhinav.dhall@monash.edu',
   contactAbhijeet: 'mailto:abhijeet.narang1@monash.edu',
 };
 
 const stats = [
+  { value: DATASET.name, label: 'Official Benchmark' },
+  { value: DATASET.totalImages, label: 'Images in Current Release' },
   { value: '2', label: 'Challenge Tasks' },
-  { value: '22 Mar 2026', label: 'Release Date' },
-  { value: '500k+', label: 'Images' },
   { value: 'ACM MM 2026', label: 'Grand Challenge' },
 ];
 
-const tasks = [
+type LabelValue = {
+  label: string;
+  value: string;
+};
+
+type Person = {
+  name: string;
+  affiliation: string;
+  image: string;
+  href: string;
+};
+
+type Resource = {
+  icon: LucideIcon;
+  title: string;
+  text: string;
+  href?: string;
+  linkLabel: string;
+};
+
+const datasetBreakdown = [
+  { split: 'Training', images: '450,000', real: '130,000', fake: '320,000' },
+  { split: 'Validation', images: '110,000', real: '50,000', fake: '60,000' },
+];
+
+const heroHighlights = [
+  { label: 'Training split', value: '450,000 images' },
+  { label: 'Validation split', value: '110,000 images' },
+  { label: 'Annotations', value: 'Paired explanation annotations' },
+];
+
+const metadataFields: LabelValue[] = [
+  { label: 'label', value: 'Binary image label: fake or real.' },
+  { label: 'image_path', value: 'Relative path to the image file within the split.' },
   {
-    icon: ShieldCheck,
-    title: 'Task 1 · Deepfake Detection',
-    summary:
-      'Given an image sample, predict whether the image is real or fake.',
-  },
-  {
-    icon: ClipboardPenLine,
-    title: 'Task 2 · Deepfake Explanation',
-    summary:
-      'Given an image sample, provide an explanation for the model’s decision with respect to the manipulation.',
+    label: 'explanation_path',
+    value: 'Relative path to the paired explanation JSON for the image.',
   },
 ];
 
-const timeline = [
-  {
-    date: '22 Mar 2026',
-    title: 'Data and resources released',
-    description: 'Release of data, code, and challenge materials.',
-  },
-  {
-    date: '10 May 2026',
-    title: 'Result submission starts',
-    description: 'Leaderboard / result submission opens.',
-  },
-  {
-    date: '20 May 2026',
-    title: 'Result submission deadline',
-    description: 'Final deadline for submitting challenge results.',
-  },
-  {
-    date: '28 May 2026',
-    title: 'Paper submission deadline',
-    description: 'Deadline for challenge paper submission.',
-  },
-  {
-    date: '16 Jul 2026',
-    title: 'Paper acceptance notification',
-    description: 'Acceptance decisions released to participants.',
-  },
-  {
-    date: '06 Aug 2026',
-    title: 'Camera-ready deadline',
-    description: 'Final camera-ready papers due.',
-  },
+const accessSteps = [
+  'Register your team using the official challenge registration form.',
+  'Download, sign, and email the EULA to the organizers.',
+  'After approval, download XPlainVerse from Hugging Face using the command below.',
 ];
 
-const resources = [
+const resources: Resource[] = [
   {
     icon: Database,
-    title: 'Dataset',
-    text:
-      'The dataset and associated challenge resources will be released with the official challenge launch.',
+    title: 'XPlainVerse Dataset',
+    text: 'Official Hugging Face release of XPlainVerse, including the current training and validation splits, paired explanation annotations, and manifest metadata.',
     href: LINKS.dataset,
     linkLabel: 'Open dataset',
   },
   {
     icon: Github,
-    title: 'Code & Baselines',
-    text:
-      'Code, baselines, and evaluation resources will be made available through the official challenge release.',
+    title: 'Code and Baselines',
+    text: 'Baseline code and supporting evaluation resources will be released through the official challenge channels when ready.',
     href: LINKS.baseline,
-    linkLabel: 'Open code repository',
-  },
-  {
-    icon: FileText,
-    title: 'Submission Materials',
-    text:
-      'Submission instructions, formats, and related participation documents will be shared with the challenge release.',
-    href: LINKS.leaderboard,
-    linkLabel: 'Open submission page',
+    linkLabel: 'Open baseline code',
   },
 ];
 
@@ -145,7 +137,7 @@ const people = {
       image: '/people/usman-tariq.jpeg',
       href: 'https://sites.google.com/site/usmantariq/',
     },
-  ],
+  ] satisfies Person[],
   dataChairs: [
     {
       name: 'Abhijeet Narang',
@@ -159,7 +151,7 @@ const people = {
       image: '/people/kartik-kuckreja.jpeg',
       href: 'https://kjaerstuisk.github.io/kartikkuckreja.github.io/',
     },
-  ],
+  ] satisfies Person[],
   programCommittee: [
     {
       name: 'Junichi Yamagishi',
@@ -181,13 +173,13 @@ const people = {
     },
     {
       name: 'Sebastiano Battiato',
-      affiliation: 'Università di Catania',
+      affiliation: 'Universita di Catania',
       image: '/people/sebastiano-battiato.png',
       href: 'https://www.dmi.unict.it/~battiato/',
     },
     {
       name: 'Luca Guarnera',
-      affiliation: 'Università di Catania',
+      affiliation: 'Universita di Catania',
       image: '/people/luca-guarnera.png',
       href: 'https://web.dmi.unict.it/faculty/luca.guarnera',
     },
@@ -196,38 +188,57 @@ const people = {
       affiliation: 'IIT Mandi',
       image: '/people/aditya-nigam.png',
       href: 'https://faculty.iitmandi.ac.in/~aditya/',
-    }
-  ],
+    },
+  ] satisfies Person[],
 };
 
-const faq = [
-  {
-    q: 'Who can participate?',
-    a: 'The challenge is open to academic and industry participants working on deepfake detection, multimedia understanding, and explainable AI.',
-  },
-  {
-    q: 'Will code and baselines be released?',
-    a: 'Yes. The official release will include the relevant challenge materials and resources.',
-  },
-  {
-    q: 'Is registration required before data access?',
-    a: 'Yes. Teams will need to complete registration and the EULA process.',
-  },
-];
+const datasetLayout = `XPlainVerse/
+|-- train/
+|   |-- manifest.jsonl
+|   |-- images/
+|   |   |-- fake/
+|   |   '-- real/
+|   '-- complex_explanations/
+|       |-- fake/
+|       '-- real/
+'-- val/
+    |-- manifest.jsonl
+    |-- images/
+    |   |-- fake/
+    |   '-- real/
+    '-- complex_explanations/
+        |-- fake/
+        '-- real/`;
+
+const manifestExample = `{"label":"fake","image_path":"train/images/fake/00023c53a28055f94cc742f4.png","explanation_path":"train/complex_explanations/fake/00023c53a28055f94cc742f4.json"}`;
+
+const downloadCommand = `huggingface-cli login
+huggingface-cli download ${DATASET.repoId} --repo-type dataset --local-dir ./XPlainVerse`;
 
 const navItems = [
   ['Overview', '#overview'],
+  ['Details', '#details'],
   ['Tasks', '#tasks'],
   ['Resources', '#resources'],
   ['Registration', '#registration'],
   ['Timeline', '#timeline'],
   ['People', '#people'],
-  ...(SHOW_FAQ ? ([['FAQ', '#faq']] as const) : []),
   ['Contact', '#contact'],
 ] as const;
 
 function hasLink(href?: string) {
   return Boolean(href && href.trim().length > 0);
+}
+
+function getLinkProps(href: string) {
+  if (href.startsWith('#')) {
+    return {};
+  }
+
+  return {
+    target: '_blank',
+    rel: 'noreferrer',
+  };
 }
 
 function SectionHeader({
@@ -255,19 +266,27 @@ function ResourceAction({
   href?: string;
   label: string;
 }) {
-  if (!hasLink(href)) {
+  if (!href || !hasLink(href)) {
     return <span className="status-pill">Coming soon</span>;
   }
 
   return (
-    <a
-      href={href}
-      className="text-link"
-      target="_blank"
-      rel="noreferrer"
-    >
+    <a href={href} className="text-link" {...getLinkProps(href)}>
       {label} <ArrowRight size={16} />
     </a>
+  );
+}
+
+function LabelValueList({ items }: { items: LabelValue[] }) {
+  return (
+    <div className="meta-list">
+      {items.map((item) => (
+        <div key={item.label} className="meta-item">
+          <div className="meta-label">{item.label}</div>
+          <div className="meta-value">{item.value}</div>
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -289,12 +308,7 @@ function PersonCard({
       </div>
 
       <div className="person-content">
-        <a
-          href={href}
-          target="_blank"
-          rel="noreferrer"
-          className="person-name"
-        >
+        <a href={href} target="_blank" rel="noreferrer" className="person-name">
           {name} <ExternalLink size={15} />
         </a>
         <div className="person-affiliation">{affiliation}</div>
@@ -340,45 +354,55 @@ function App() {
               </div>
 
               <h1>{SITE.shortTitle}</h1>
-
               <p className="hero-text">{SITE.subtitle}</p>
 
-              {/* <p className="hero-subtext">
-                The rapid advancement of Generative AI has fundamentally reshaped how
-                visual content is produced, circulated, and consumed. Recent diffusion
-                and vision-language models can fabricate highly persuasive,
-                photorealistic deepfakes that extend beyond identity alterations,
-                enabling manipulations of human actions, intent, object interactions,
-                and scene-level semantics.
+              <p className="hero-subtext">
+                The Explainable Deepfake Detection Challenge introduces{' '}
+                <strong>{DATASET.name}</strong>, a large-scale benchmark for image-level
+                deepfake detection and explanation generation built on top of
+                MultiFakeVerse. Participants are asked not only to
+                determine whether an image is real or fake, but also to provide a
+                grounded explanation based on visible evidence in the image.
               </p>
 
               <p className="hero-subtext">
-                As deepfakes evolve from simple facial swaps to rich, context-aware
-                manipulations driven by large-scale generative models, the core challenge
-                is no longer detection alone but also understanding why an image is
-                identified as manipulated. The challenge includes two tasks: deepfake
-                detection and deepfake explanation.
-              </p> */}
+                The current release includes the training and validation splits of{' '}
+                <strong>{DATASET.name}</strong>, together with paired explanation
+                annotations and manifest metadata for each sample.
+              </p>
 
               <div className="hero-actions">
-                <a className="button button-primary" href="#tasks">
-                  View Tasks <ArrowRight size={18} />
+                <a className="button button-primary" href="#details">
+                  Challenge Details <ArrowRight size={18} />
                 </a>
-                <a className="button button-secondary" href="#registration">
-                  Registration
+                <a
+                  className="button button-secondary"
+                  href={LINKS.dataset}
+                  {...getLinkProps(LINKS.dataset)}
+                >
+                  Open Dataset
                 </a>
               </div>
             </div>
 
             <div className="hero-panel">
               <div className="panel-card panel-accent">
-                <div className="panel-kicker">ACM MM 2026 Grand Challenge</div>
-                <h3>Detection and explanation</h3>
+                <div className="panel-kicker">Dataset Snapshot</div>
+                <h3>Current XPlainVerse Release</h3>
                 <p>
-                  The challenge focuses on both deepfake detection and explanation,
-                  supporting research on models that not only make predictions but also
-                  provide interpretable reasoning.
+                  The current XPlainVerse release provides training and validation data
+                  for both challenge tasks, together with paired explanation
+                  annotations and manifest metadata.
                 </p>
+
+                <div className="panel-metrics">
+                  {heroHighlights.map((item) => (
+                    <div key={item.label} className="panel-metric">
+                      <div className="panel-metric-label">{item.label}</div>
+                      <div className="panel-metric-value">{item.value}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div className="stats-grid">
@@ -394,79 +418,231 @@ function App() {
         </section>
 
         <section id="overview" className="section">
-          <div className="container">
+          <div className="container narrow-layout">
             <SectionHeader
               eyebrow="Overview"
               title="Challenge Description"
-              text=""
+              text="The challenge focuses on both image authenticity prediction and grounded explanation generation."
             />
 
-            <div className="content-card large-card">
+            <article className="content-card prose-card">
               <p>
-                Deepfake detection is increasingly moving beyond simple face swaps toward rich semantic manipulations. 
-                This challenge focuses on both identifying manipulated content and explaining model decisions. 
-                </p>
-                <p>
-                  Built on top of MultiFakeVerse, the benchmark includes two tasks: Deepfake Detection, 
-                  where the goal is to identify whether an image is real or fake, and Deepfake Explanation, 
-                  where the goal is to explain the model’s decision with respect to the manipulation. 
-                  The goal is to encourage research on deepfake systems that are both accurate and interpretable.
-                </p>
-              {/* <p>
-                As deepfakes evolve from simple facial swaps to rich, context-aware
-                manipulations driven by large-scale generative models, the core
-                challenge facing the multimedia community is no longer detection alone
-                but understanding why an image is identified as manipulated.
-                Traditional detectors often act as black boxes, flagging inconsistencies
-                without offering human-interpretable reasoning.
+                Deepfake detection is increasingly moving beyond simple face swaps
+                toward richer semantic manipulations. This challenge focuses on both
+                identifying manipulated content and explaining model decisions. In
+                many practical settings, a prediction alone is not enough; systems
+                should also indicate the visual evidence that supports a decision.
               </p>
-
               <p>
-                The Deepfake Explainability Challenge brings these goals together
-                through two tasks: deepfake detection and deepfake explanation. The
-                challenge is motivated by MultiFakeVerse and related challenge
-                resources, with data and materials to be released through the official
-                challenge website.
-              </p> */}
+                <strong>{DATASET.name}</strong> builds on top of MultiFakeVerse and 
+                extends it with paired explanation annotations for explainable 
+                deepfake analysis. The challenge includes two 
+                tasks: <strong>Deepfake Detection</strong>, where the goal is to
+                identify whether an image is real or fake, and{' '}
+                <strong>Deepfake Explanation</strong>, where the goal is to explain the
+                model&apos;s decision using visible evidence in the image.
+              </p>
+              <p>
+                The current release provides <strong>{DATASET.totalImages}</strong>{' '}
+                images across the training and validation splits, together with paired
+                explanation annotations and manifest metadata for each sample. This
+                supports both predictive evaluation and analysis of how models justify
+                their decisions.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section id="details" className="section section-alt">
+          <div className="container narrow-layout">
+            <SectionHeader
+              eyebrow="Details"
+              title="Challenge Details"
+              text="Dataset summary, structure, metadata format, and access workflow."
+            />
+
+            <div className="details-stack">
+              <article className="content-card prose-card detail-section-block">
+                <h3>Dataset Summary</h3>
+                <p>
+                  For both tasks, we use <strong>{DATASET.name}</strong>. The dataset contains{' '}
+                  <strong>{DATASET.totalImages}</strong> images across the currently
+                  released training and validation splits, including{' '}
+                  <strong>{DATASET.totalReal}</strong> real and{' '}
+                  <strong>{DATASET.totalFake}</strong> fake images. Each sample is
+                  accompanied by the metadata needed to locate the image and its paired
+                  explanation file, supporting both detection and explanation
+                  experiments.
+                </p>
+
+                <table className="data-table dense-table">
+                  <thead>
+                    <tr>
+                      <th>Subset</th>
+                      <th>Images</th>
+                      <th>Real</th>
+                      <th>Fake</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {datasetBreakdown.map((row) => (
+                      <tr key={row.split}>
+                        <td>{row.split}</td>
+                        <td>{row.images}</td>
+                        <td>{row.real}</td>
+                        <td>{row.fake}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                <p className="inline-note">
+                  The current public release includes the train and validation splits.
+                  The test set will be released later.
+                </p>
+              </article>
+
+              <article className="content-card prose-card detail-section-block">
+                <h3>Dataset Structure</h3>
+                <p>
+                  Each split contains an <code>images</code> directory, a paired{' '}
+                  <code>complex_explanations</code> directory, and a{' '}
+                  <code>manifest.jsonl</code> file. Each explanation JSON corresponds to
+                  the image with the same filename stem, making it easy to pair visual
+                  samples with their grounded textual annotations.
+                </p>
+
+                <pre className="code-card">
+                  <code>{datasetLayout}</code>
+                </pre>
+              </article>
+
+              <article className="content-card prose-card detail-section-block">
+                <h3>Metadata Details</h3>
+                <p>
+                  Each line in <code>manifest.jsonl</code> stores the label and relative
+                  paths needed to load an image and its paired explanation.
+                </p>
+
+                <LabelValueList items={metadataFields} />
+
+                <pre className="code-card code-compact">
+                  <code>{manifestExample}</code>
+                </pre>
+              </article>
+
+              <article className="content-card prose-card detail-section-block">
+                <h3>Dataset Access</h3>
+                <p>
+                  Dataset access is handled through the challenge registration process.
+                  Once the required steps are complete, approved teams can download
+                  XPlainVerse from Hugging Face using the command below.
+                </p>
+
+                <ol className="step-list">
+                  {accessSteps.map((step) => (
+                    <li key={step}>{step}</li>
+                  ))}
+                </ol>
+
+                <pre className="code-card">
+                  <code>{downloadCommand}</code>
+                </pre>
+              </article>
             </div>
           </div>
         </section>
 
-        <section id="tasks" className="section section-alt">
-          <div className="container">
+        <section id="tasks" className="section">
+          <div className="container narrow-layout">
             <SectionHeader
               eyebrow="Tasks"
               title="Challenge Tasks"
-              text="The challenge consists of two tasks."
+              text="The challenge consists of two tasks on XPlainVerse: authenticity prediction and grounded explanation generation."
             />
 
-            <div className="card-grid two-up">
-              {tasks.map((task) => {
-                const Icon = task.icon;
+            <div className="task-stack">
+              <article className="content-card prose-card task-detail-card">
+                <div className="task-heading-row">
+                  <div className="icon-chip">
+                    <ShieldCheck size={20} />
+                  </div>
+                  <div>
+                    <h3>Task 1: Deepfake Detection</h3>
+                    <p className="task-kicker">
+                      In this task, participants are asked to determine whether an input
+                      image is <strong>real</strong> or <strong>fake</strong>.
+                    </p>
+                  </div>
+                </div>
 
-                return (
-                  <article key={task.title} className="content-card task-card">
-                    <div className="icon-chip">
-                      <Icon size={20} />
-                    </div>
-                    <h3>{task.title}</h3>
-                    <p>{task.summary}</p>
-                  </article>
-                );
-              })}
+                <p>
+                  This is the authenticity classification task of the challenge.
+                  Participants are expected to develop their methods using the released
+                  training and validation splits of XPlainVerse, and submit predictions
+                  for the official test set when it is released.
+                </p>
+
+                <p>
+                  <strong>Real:</strong> the image is authentic and does not contain
+                  synthesized or manipulated visual content.
+                </p>
+
+                <p>
+                  <strong>Fake:</strong> the image is generated or manipulated.
+                </p>
+
+                <p>
+                  The model output for each test image should be a single authenticity
+                  prediction. The official evaluation metric and submission template will
+                  be released together with the test set and evaluation package.
+                </p>
+              </article>
+
+              <article className="content-card prose-card task-detail-card">
+                <div className="task-heading-row">
+                  <div className="icon-chip">
+                    <ClipboardPenLine size={20} />
+                  </div>
+                  <div>
+                    <h3>Task 2: Deepfake Explanation</h3>
+                    <p className="task-kicker">
+                      In this task, participants are asked to generate a natural-language
+                      explanation supporting the authenticity decision for the input
+                      image.
+                    </p>
+                  </div>
+                </div>
+
+                <p>
+                  This task focuses on explainability. In addition to recognizing whether
+                  an image is real or fake, participants must produce an explanation
+                  grounded in the image itself. The explanation should justify the
+                  decision using visible evidence, such as visual artifacts,
+                  inconsistencies, or other authenticity cues.
+                </p>
+
+                <p>
+                  Explanations should be specific to the given image and consistent with
+                  the submitted authenticity label. Participants may use the paired explanation annotations provided in
+                  XPlainVerse to develop and validate their methods. The official
+                  evaluation protocol and submission format for this task will be
+                  released with the challenge evaluation materials.
+                </p>
+              </article>
             </div>
           </div>
         </section>
 
-        <section id="resources" className="section">
+        <section id="resources" className="section section-alt">
           <div className="container">
             <SectionHeader
               eyebrow="Resources"
               title="Dataset and Resources"
-              text="Challenge data, code, and supporting materials will be released through the official challenge channels."
+              text="Official materials that are currently available."
             />
 
-            <div className="card-grid three-up">
+            <div className="resource-grid">
               {resources.map((resource) => {
                 const Icon = resource.icon;
 
@@ -485,7 +661,7 @@ function App() {
           </div>
         </section>
 
-        <section id="registration" className="section section-alt">
+        <section id="registration" className="section">
           <div className="container">
             <SectionHeader
               eyebrow="Registration"
@@ -498,18 +674,16 @@ function App() {
                 <div className="registration-step-label">Step 1</div>
                 <h3>Team Registration</h3>
                 <p>
-                  For participating in the challenge, the first step is to register your
-                  team. Please complete the form with the required information.
+                  Register your team first so the organizers can match your dataset
+                  access request with your challenge submission details.
                 </p>
-                {'\n'}
 
                 <div className="registration-actions">
                   {hasLink(LINKS.registrationForm) ? (
                     <a
                       href={LINKS.registrationForm}
                       className="button button-primary"
-                      target="_blank"
-                      rel="noreferrer"
+                      {...getLinkProps(LINKS.registrationForm)}
                     >
                       Open registration form <ArrowRight size={18} />
                     </a>
@@ -523,20 +697,25 @@ function App() {
                 <div className="registration-step-label">Step 2</div>
                 <h3>EULA Agreement</h3>
                 <p>
-                  The second stage is the EULA agreement. Please download the dataset
-                  EULA and sign it at your end.
+                  Download the dataset EULA, sign it, and email the signed copy to the
+                  organizers. After the registration and EULA process is complete,
+                  approved teams will be able to access the dataset release on Hugging
+                  Face.
                 </p>
 
                 <p>
-                  Please email the signed EULA to {' '}
+                  Please email the signed EULA to{' '}
                   <a href="mailto:abhinav.dhall@monash.edu" className="inline-link">
                     abhinav.dhall@monash.edu
-                  </a>
-                  {' '}
+                  </a>{' '}
                   and{' '}
-                  <a href="mailto:explainable.deepfakes.challenge@gmail.com" className="inline-link">
-                     explainable.deepfakes.challenge@gmail.com
+                  <a
+                    href="mailto:explainable.deepfakes.challenge@gmail.com"
+                    className="inline-link"
+                  >
+                    explainable.deepfakes.challenge@gmail.com
                   </a>
+                  .
                 </p>
 
                 <div className="registration-actions">
@@ -544,8 +723,7 @@ function App() {
                     <a
                       href={LINKS.eula}
                       className="button button-primary"
-                      target="_blank"
-                      rel="noreferrer"
+                      {...getLinkProps(LINKS.eula)}
                     >
                       Download EULA
                     </a>
@@ -554,11 +732,12 @@ function App() {
                   )}
                 </div>
               </article>
+
             </div>
           </div>
         </section>
 
-        <section id="timeline" className="section">
+        <section id="timeline" className="section section-alt">
           <div className="container">
             <SectionHeader
               eyebrow="Timeline"
@@ -567,7 +746,39 @@ function App() {
             />
 
             <div className="timeline">
-              {timeline.map((item, index) => (
+              {[
+                {
+                  date: '22 Mar 2026',
+                  title: 'Data and resources released',
+                  description:
+                    'XPlainVerse and the initial challenge materials are released.',
+                },
+                {
+                  date: '10 May 2026',
+                  title: 'Result submission starts',
+                  description: 'Leaderboard and result submission open.',
+                },
+                {
+                  date: '20 May 2026',
+                  title: 'Result submission deadline',
+                  description: 'Final deadline for submitting challenge results.',
+                },
+                {
+                  date: '28 May 2026',
+                  title: 'Paper submission deadline',
+                  description: 'Deadline for challenge paper submission.',
+                },
+                {
+                  date: '16 Jul 2026',
+                  title: 'Paper acceptance notification',
+                  description: 'Acceptance decisions released to participants.',
+                },
+                {
+                  date: '06 Aug 2026',
+                  title: 'Camera-ready deadline',
+                  description: 'Final camera-ready papers due.',
+                },
+              ].map((item, index) => (
                 <div key={`${item.date}-${item.title}`} className="timeline-row">
                   <div className="timeline-marker">
                     <span>{index + 1}</span>
@@ -584,7 +795,7 @@ function App() {
           </div>
         </section>
 
-        <section id="people" className="section section-alt">
+        <section id="people" className="section">
           <div className="container">
             <SectionHeader
               eyebrow="People"
@@ -620,27 +831,6 @@ function App() {
             </div>
           </div>
         </section>
-
-        {SHOW_FAQ && (
-          <section id="faq" className="section">
-            <div className="container">
-              <SectionHeader
-                eyebrow="FAQ"
-                title="Frequently Asked Questions"
-                text="Common questions about participation."
-              />
-
-              <div className="faq-grid">
-                {faq.map((item) => (
-                  <article key={item.q} className="content-card faq-card">
-                    <h3>{item.q}</h3>
-                    <p>{item.a}</p>
-                  </article>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
 
         <section id="contact" className="section contact-section">
           <div className="container">
@@ -680,6 +870,7 @@ function App() {
 
           <div className="footer-links">
             <a href="#overview">Overview</a>
+            <a href="#details">Details</a>
             <a href="#registration">Registration</a>
             <a href="#timeline">Schedule</a>
           </div>
