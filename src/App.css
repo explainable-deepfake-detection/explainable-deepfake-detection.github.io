@@ -412,6 +412,10 @@ img {
   gap: 18px;
 }
 
+.nested-grid {
+  margin-top: 18px;
+}
+
 .detail-section-block,
 .task-detail-card {
   border-radius: 24px;
@@ -544,6 +548,58 @@ img {
 .meta-value {
   color: var(--muted);
   line-height: 1.7;
+}
+
+.track-card,
+.metric-card {
+  padding: 18px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.track-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 11px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+  background: rgba(142, 182, 255, 0.12);
+  border: 1px solid rgba(142, 182, 255, 0.2);
+  color: var(--muted-strong);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.track-card h4,
+.metric-card p {
+  margin: 0;
+}
+
+.track-card h4,
+.metric-name {
+  margin-bottom: 8px;
+  color: var(--muted-strong);
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.track-card p,
+.metric-card p {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.metric-name {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.16rem 0.52rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--accent);
+  font-size: 0.84rem;
 }
 
 .icon-chip {

@@ -1,4 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
+import type { ReactNode } from 'react';
 import {
   ArrowRight,
   ClipboardPenLine,
@@ -28,7 +29,7 @@ const SITE = {
 
 const LINKS = {
   dataset: 'https://huggingface.co/datasets/Abhijeet8901/XPlainVerse',
-  baseline: '',
+  baseline: 'https://github.com/Abhijeet8901/XPlainVerse-ACMChallenge',
   registrationForm: 'https://forms.office.com/r/gWypG9JGpe',
   eula: 'docs/EULA_Explainable_Deepfake_Detection_Challenge_2026.pdf',
   contactAbhinav: 'mailto:Abhinav.dhall@monash.edu',
@@ -44,7 +45,7 @@ const stats = [
 
 type LabelValue = {
   label: string;
-  value: string;
+  value: string | ReactNode;
 };
 
 type Person = {
@@ -70,15 +71,23 @@ const datasetBreakdown = [
 const heroHighlights = [
   { label: 'Training split', value: '450,000 images' },
   { label: 'Validation split', value: '110,000 images' },
-  { label: 'Annotations', value: 'Paired explanation annotations' },
+  { label: 'Submission fields', value: 'Label + complex + simple explanations' },
 ];
 
 const metadataFields: LabelValue[] = [
   { label: 'label', value: 'Binary image label: fake or real.' },
   { label: 'image_path', value: 'Relative path to the image file within the split.' },
   {
-    label: 'explanation_path',
-    value: 'Relative path to the paired explanation JSON for the image.',
+    label: 'complex_explanation_path',
+    value: 'Relative path to the paired complex explanation JSON for the image.',
+  },
+  {
+    label: 'simple_explanation_path',
+    value: (
+      <>
+        Relative path to the paired simple explanation JSON for the image. <strong>Note:</strong> for real images, this is the same as <code>complex_explanation_path</code> because simple explanations are only provided for fake images.
+      </>
+    ),
   },
 ];
 
@@ -87,6 +96,79 @@ const accessSteps = [
   'Download, sign, and email the EULA to the organizers.',
   'After approval, download XPlainVerse from Hugging Face using the command below.',
 ];
+
+const submissionExample = `{"sample_id":"000001","label":"fake","complex_explanation":"...","simple_explanation":"..."}`;
+
+const explanationTracks = [
+  {
+    title: 'Complex explanation',
+    tag: 'Detailed evidence',
+    text:
+      'A detailed explanation grounded in visible image evidence, such as artifacts, geometry issues, texture inconsistencies, text errors, lighting mismatches, or object interactions.',
+  },
+  {
+    title: 'Simple explanation',
+    tag: 'Clear and concise',
+    text:
+      'A shorter and more accessible explanation that preserves the key reason behind the decision without carrying every low-level detail from the complex explanation.',
+  },
+];
+
+const complexMetricItems = [
+  {
+    name: 'complex_bert_f1',
+    text:
+      'BERTScore F1 between the predicted and reference complex explanations.',
+  },
+  {
+    name: 'complex_entity_f1',
+    text:
+      'Qwen 3.5 4B extracts diagnostic entities from both the ground-truth explanation and the predicted explanation. It then checks whether the ground-truth entities are covered by the prediction and whether the predicted entities are covered by the ground truth, and combines those two directional scores into an F1.',
+  },
+  {
+    name: 'complex_facts_f1',
+    text:
+      'Qwen 3.5 4B extracts evidence facts or claims from both the ground-truth explanation and the predicted explanation. It then checks whether the ground-truth facts are covered by the prediction and whether the predicted facts are covered by the ground truth, and combines those two directional scores into an F1.',
+  },
+  {
+    name: 'complex_overall_score',
+    text:
+      'Final complex explanation score: 30% semantic similarity, 40% entity overlap, and 30% fact overlap.',
+  },
+];
+
+const simpleMetricItems = [
+  {
+    name: 'simple_bert_f1',
+    text:
+      'BERTScore F1 between the predicted and reference simple explanations. It measures whether the simplified meaning matches the reference.',
+  },
+  {
+    name: 'simple_sle_score',
+    text:
+      'Raw score from the SLE simplicity model. It is reported directly in the output before clipping and normalization.',
+  },
+  {
+    name: 'simple_overall_score',
+    text:
+      'Final simple explanation score: 70% semantic agreement and 30% normalized simplicity.',
+  },
+];
+
+const complexMetricFormula = `complex_entity_f1 = harmonic_mean(entity_precision, entity_recall)
+complex_facts_f1 = harmonic_mean(fact_precision, fact_recall)
+
+complex_overall_score =
+  0.3 * complex_bert_f1 +
+  0.4 * complex_entity_f1 +
+  0.3 * complex_facts_f1`;
+
+const simpleMetricFormula = `simple_sle_norm = clip(simple_sle_score, -1, 4)
+simple_sle_norm = (simple_sle_norm + 1) / 5
+
+simple_overall_score =
+  0.7 * simple_bert_f1 +
+  0.3 * simple_sle_norm`;
 
 const resources: Resource[] = [
   {
@@ -99,9 +181,9 @@ const resources: Resource[] = [
   {
     icon: Github,
     title: 'Code and Baselines',
-    text: 'Baseline code and supporting evaluation resources will be released through the official challenge channels when ready.',
+    text: 'Official challenge repository with the public evaluation bundle, environment files, and baseline-facing resources for the explanation task.',
     href: LINKS.baseline,
-    linkLabel: 'Open baseline code',
+    linkLabel: 'Open code and baselines',
   },
 ];
 
@@ -198,19 +280,23 @@ const datasetLayout = `XPlainVerse/
 |   |-- images/
 |   |   |-- fake/
 |   |   '-- real/
-|   '-- complex_explanations/
-|       |-- fake/
-|       '-- real/
+|   |-- complex_explanations/
+|   |   |-- fake/
+|   |   '-- real/
+|   '-- simple_explanations/
+|       '-- fake/
 '-- val/
     |-- manifest.jsonl
     |-- images/
     |   |-- fake/
     |   '-- real/
-    '-- complex_explanations/
-        |-- fake/
-        '-- real/`;
+    |-- complex_explanations/
+    |   |-- fake/
+    |   '-- real/
+    '-- simple_explanations/
+        '-- fake/`;
 
-const manifestExample = `{"label":"fake","image_path":"train/images/fake/00023c53a28055f94cc742f4.png","explanation_path":"train/complex_explanations/fake/00023c53a28055f94cc742f4.json"}`;
+const manifestExample = `{"label":"fake","image_path":"train/images/fake/00023c53a28055f94cc742f4.png","complex_explanation_path":"train/complex_explanations/fake/00023c53a28055f94cc742f4.json","simple_explanation_path":"train/simple_explanations/fake/00023c53a28055f94cc742f4.json"}`;
 
 const downloadCommand = `huggingface-cli login
 huggingface-cli download ${DATASET.repoId} --repo-type dataset --local-dir ./XPlainVerse`;
@@ -219,6 +305,7 @@ const navItems = [
   ['Overview', '#overview'],
   ['Details', '#details'],
   ['Tasks', '#tasks'],
+  ['Metrics', '#metrics'],
   ['Resources', '#resources'],
   ['Registration', '#registration'],
   ['Timeline', '#timeline'],
@@ -360,15 +447,17 @@ function App() {
                 The Explainable Deepfake Detection Challenge introduces{' '}
                 <strong>{DATASET.name}</strong>, a large-scale benchmark for image-level
                 deepfake detection and explanation generation built on top of
-                MultiFakeVerse. Participants are asked not only to
-                determine whether an image is real or fake, but also to provide a
-                grounded explanation based on visible evidence in the image.
+                MultiFakeVerse. Participants are asked not only to determine whether an
+                image is real or fake, but also to provide two grounded natural-language
+                explanations: a detailed <strong>complex explanation</strong> and a
+                non-technical <strong>simple explanation</strong>.
               </p>
 
               <p className="hero-subtext">
                 The current release includes the training and validation splits of{' '}
-                <strong>{DATASET.name}</strong>, together with paired explanation
-                annotations and manifest metadata for each sample.
+                <strong>{DATASET.name}</strong>, together with complex explanation
+                annotations, released simple explanations for fake samples,
+                evaluation assets, and manifest metadata for each sample.
               </p>
 
               <div className="hero-actions">
@@ -391,8 +480,8 @@ function App() {
                 <h3>Current XPlainVerse Release</h3>
                 <p>
                   The current XPlainVerse release provides training and validation data
-                  for both challenge tasks, together with paired explanation
-                  annotations and manifest metadata.
+                  for both challenge tasks, together with complex explanations for both
+                  classes, simple explanations for fake samples, and manifest metadata.
                 </p>
 
                 <div className="panel-metrics">
@@ -440,7 +529,9 @@ function App() {
                 tasks: <strong>Deepfake Detection</strong>, where the goal is to
                 identify whether an image is real or fake, and{' '}
                 <strong>Deepfake Explanation</strong>, where the goal is to explain the
-                model&apos;s decision using visible evidence in the image.
+                model&apos;s decision using visible evidence in the image through both a
+                detailed complex explanation for technical users and a simplified
+                 explanation for the masses.
               </p>
               <p>
                 The current release provides <strong>{DATASET.totalImages}</strong>{' '}
@@ -506,10 +597,14 @@ function App() {
                 <h3>Dataset Structure</h3>
                 <p>
                   Each split contains an <code>images</code> directory, a paired{' '}
-                  <code>complex_explanations</code> directory, and a{' '}
-                  <code>manifest.jsonl</code> file. Each explanation JSON corresponds to
-                  the image with the same filename stem, making it easy to pair visual
-                  samples with their grounded textual annotations.
+                  <code>complex_explanations</code> directory, a{' '}
+                  <code>simple_explanations</code> directory, and a{' '}
+                  <code>manifest.jsonl</code> file. Complex explanations are organized
+                  for both <code>fake</code> and <code>real</code> images, while simple
+                  explanations are only provided for <code>fake</code>. Each
+                  explanation JSON corresponds to the image with the same filename
+                  stem, making it easy to pair visual samples with their grounded
+                  textual annotations.
                 </p>
 
                 <pre className="code-card">
@@ -521,7 +616,8 @@ function App() {
                 <h3>Metadata Details</h3>
                 <p>
                   Each line in <code>manifest.jsonl</code> stores the label and relative
-                  paths needed to load an image and its paired explanation.
+                  paths needed to load an image together with its complex and simple
+                  explanation files.
                 </p>
 
                 <LabelValueList items={metadataFields} />
@@ -607,27 +703,130 @@ function App() {
                   <div>
                     <h3>Task 2: Deepfake Explanation</h3>
                     <p className="task-kicker">
-                      In this task, participants are asked to generate a natural-language
-                      explanation supporting the authenticity decision for the input
-                      image.
+                      In this task, participants are asked to generate both a complex
+                      explanation and a simple explanation supporting the authenticity
+                      decision for the input image.
                     </p>
                   </div>
                 </div>
 
                 <p>
                   This task focuses on explainability. In addition to recognizing whether
-                  an image is real or fake, participants must produce an explanation
-                  grounded in the image itself. The explanation should justify the
-                  decision using visible evidence, such as visual artifacts,
-                  inconsistencies, or other authenticity cues.
+                  an image is real or fake, participants must produce two explanations
+                  grounded in the image itself. Both should justify the decision using
+                  visible evidence, such as artifacts, inconsistencies, or other
+                  authenticity cues, but they serve different communicative purposes.
                 </p>
 
                 <p>
-                  Explanations should be specific to the given image and consistent with
-                  the submitted authenticity label. Participants may use the paired explanation annotations provided in
-                  XPlainVerse to develop and validate their methods. The official
-                  evaluation protocol and submission format for this task will be
-                  released with the challenge evaluation materials.
+                  The <strong>complex explanation</strong> should be evidence-rich and
+                  specific, while the <strong>simple explanation</strong> should convey
+                  the core reason in a clearer, shorter, and more accessible way.
+                  Both explanations must remain consistent with the submitted
+                  authenticity label.
+                </p>
+
+                <div className="card-grid two-up nested-grid">
+                  {explanationTracks.map((track) => (
+                    <div key={track.title} className="track-card">
+                      <div className="track-tag">{track.tag}</div>
+                      <h4>{track.title}</h4>
+                      <p>{track.text}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <p>
+                  Participants may use the paired explanation annotations provided in
+                  XPlainVerse to develop and validate their methods. The public
+                  evaluation bundle scores the complex and simple outputs separately and
+                  reports both track-specific scores and overall explanation scores.
+                </p>
+
+                <pre className="code-card code-compact">
+                  <code>{submissionExample}</code>
+                </pre>
+
+                <p className="inline-note">
+                  The explanation submission for each sample should include the
+                  authenticity label, one complex explanation, and one simple
+                  explanation.
+                </p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="metrics" className="section section-alt">
+          <div className="container narrow-layout">
+            <SectionHeader
+              eyebrow="Metrics"
+              title="How Task 2 Is Evaluated"
+              text="The public evaluator scores complex and simple explanations separately. Complex explanations are judged on semantic match and evidence overlap, while simple explanations are judged on semantic match and simplicity."
+            />
+
+            <div className="details-stack">
+              <article className="content-card prose-card detail-section-block">
+                <h3>Complex Explanation Metrics</h3>
+                <p>
+                  The complex explanation track asks a simple question: does the
+                  prediction say the same important things as the reference, and does
+                  it point to the same visual evidence? To answer that, the evaluator
+                  combines one semantic similarity score with two evidence-overlap
+                  scores. For the overlap-based metrics, the evaluator uses{' '}
+                  <code>Qwen/Qwen3.5-4B</code> to extract structured evidence from both
+                  explanations before checking coverage in both directions.
+                </p>
+
+                <div className="card-grid two-up nested-grid">
+                  {complexMetricItems.map((metric) => (
+                    <div key={metric.name} className="metric-card">
+                      <div className="metric-name">{metric.name}</div>
+                      <p>{metric.text}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <pre className="code-card">
+                  <code>{complexMetricFormula}</code>
+                </pre>
+
+                <p className="inline-note">
+                  In other words, the evaluator first extracts entities and facts from
+                  one explanation, checks whether they are covered by the other
+                  explanation, and then repeats the same process in reverse. This
+                  rewards explanations that recover the same evidence without adding
+                  unsupported content.
+                </p>
+              </article>
+
+              <article className="content-card prose-card detail-section-block">
+                <h3>Simple Explanation Metrics</h3>
+                <p>
+                  The simple explanation track is designed to reward two things at the
+                  same time: faithfulness and simplicity. A good simple explanation
+                  should preserve the core reason from the reference while expressing
+                  it in a shorter, easier form.
+                </p>
+
+                <div className="card-grid three-up nested-grid">
+                  {simpleMetricItems.map((metric) => (
+                    <div key={metric.name} className="metric-card">
+                      <div className="metric-name">{metric.name}</div>
+                      <p>{metric.text}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <pre className="code-card">
+                  <code>{simpleMetricFormula}</code>
+                </pre>
+
+                <p className="inline-note">
+                  The raw SLE value is clipped and normalized before it is combined
+                  with BERTScore. In the dataset, because the real samples
+                  has no separate simple explanation, the complex explanation is used
+                  as the simple reference.
                 </p>
               </article>
             </div>
@@ -871,6 +1070,7 @@ function App() {
           <div className="footer-links">
             <a href="#overview">Overview</a>
             <a href="#details">Details</a>
+            <a href="#metrics">Metrics</a>
             <a href="#registration">Registration</a>
             <a href="#timeline">Schedule</a>
           </div>
