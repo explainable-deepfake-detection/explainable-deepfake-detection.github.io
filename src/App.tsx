@@ -271,6 +271,12 @@ const people = {
       image: '/people/aditya-nigam.png',
       href: 'https://faculty.iitmandi.ac.in/~aditya/',
     },
+    {
+      name: 'Ping Liu',
+      affiliation: 'University of Nevada Reno',
+      image: '/people/ping-liu.jpg',
+      href: 'https://pinglmlcv.github.io/pingliu264/',  
+    }
   ] satisfies Person[],
 };
 
