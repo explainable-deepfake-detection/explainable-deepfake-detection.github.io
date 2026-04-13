@@ -659,6 +659,17 @@ img {
   align-items: flex-start;
 }
 
+.registration-policy-card {
+  margin-top: 20px;
+  background:
+    linear-gradient(135deg, rgba(142, 182, 255, 0.16), rgba(255, 255, 255, 0.04)),
+    var(--panel);
+}
+
+.registration-policy-card p {
+  max-width: 78ch;
+}
+
 .registration-step-label {
   display: inline-block;
   margin-bottom: 14px;

@@ -939,6 +939,22 @@ function App() {
               </article>
 
             </div>
+
+            <article className="content-card registration-policy-card">
+              <div className="registration-step-label">Presentation policy</div>
+              <h3>On-site presentation required</h3>
+              <p>
+                ACM Multimedia 2026 is an on-site event only. This means that all
+                papers and contributions must be presented by a physical person
+                on-site; remote presentations will not be hosted or allowed.
+              </p>
+              <p>
+                Papers and contributions not presented on-site will be considered a
+                no-show and removed from the proceedings of the conference. More
+                details will be provided to handle unfortunate situations in which
+                none of the authors would be able to attend the conference physically.
+              </p>
+            </article>
           </div>
         </section>
 
