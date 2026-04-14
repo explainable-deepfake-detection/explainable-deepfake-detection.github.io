@@ -276,6 +276,12 @@ const people = {
       affiliation: 'University of Nevada Reno',
       image: '/people/ping-liu.jpg',
       href: 'https://pinglmlcv.github.io/pingliu264/',  
+    },
+    {
+      name: 'Rajesh Sharma',
+      affiliation: 'Plaksha University',
+      image: '/people/rajesh-sharma.jpg',
+      href: 'https://plaksha.edu.in/faculty-details/rajesh-sharma/',  
     }
   ] satisfies Person[],
 };
