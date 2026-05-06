@@ -981,17 +981,17 @@ function App() {
                     'XPlainVerse and the initial challenge materials are released.',
                 },
                 {
-                  date: '10 May 2026',
+                  date: '26 May 2026',
                   title: 'Result submission starts',
                   description: 'Leaderboard and result submission open.',
                 },
                 {
-                  date: '20 May 2026',
+                  date: '15 June 2026',
                   title: 'Result submission deadline',
                   description: 'Final deadline for submitting challenge results.',
                 },
                 {
-                  date: '28 May 2026',
+                  date: '30 June 2026',
                   title: 'Paper submission deadline',
                   description: 'Deadline for challenge paper submission.',
                 },
