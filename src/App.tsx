@@ -981,7 +981,7 @@ function App() {
                     'XPlainVerse and the initial challenge materials are released.',
                 },
                 {
-                  date: '26 May 2026',
+                  date: '28 May 2026',
                   title: 'Result submission starts',
                   description: 'Leaderboard and result submission open.',
                 },
