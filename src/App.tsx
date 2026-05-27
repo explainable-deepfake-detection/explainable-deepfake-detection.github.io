@@ -180,7 +180,10 @@ const testArchiveCommand = `cd XPlainVerse
 cat test/test_images.tar.part-* > test/test_images.tar
 tar -xf test/test_images.tar -C test`;
 
-const submissionZipCommand = `zip submission.zip detection.jsonl complex.jsonl simple.jsonl`;
+const submissionPackageLayout = `submission.zip
+|-- detection.jsonl
+|-- complex.jsonl
+'-- simple.jsonl`;
 
 const detectionMetricItems = [
   {
@@ -426,9 +429,7 @@ const datasetLayout = `XPlainVerse/
 |       '-- fake/
 '-- test/
     |-- manifest.jsonl
-    |-- test_images.tar.part-000
-    |-- test_images.tar.part-001
-    '-- ...`;
+    '-- images/`;
 
 const manifestExample = `{"label":"fake","image_path":"train/images/fake/00023c53a28055f94cc742f4.png","complex_explanation_path":"train/complex_explanations/fake/00023c53a28055f94cc742f4.json","simple_explanation_path":"train/simple_explanations/fake/00023c53a28055f94cc742f4.json"}`;
 
@@ -439,8 +440,8 @@ type PageId =
   | 'overview'
   | 'details'
   | 'tasks'
-  | 'submission'
   | 'metrics'
+  | 'submission'
   | 'resources'
   | 'registration'
   | 'timeline'
@@ -450,8 +451,8 @@ const navItems: { label: string; page: PageId }[] = [
   { label: 'Overview', page: 'overview' },
   { label: 'Details', page: 'details' },
   { label: 'Tasks', page: 'tasks' },
-  { label: 'Submission', page: 'submission' },
   { label: 'Metrics', page: 'metrics' },
+  { label: 'Submission', page: 'submission' },
   { label: 'Resources', page: 'resources' },
   { label: 'Registration', page: 'registration' },
   { label: 'Timeline', page: 'timeline' },
@@ -787,19 +788,13 @@ function App() {
                   <code>manifest.jsonl</code> file. Complex explanations are organized
                   for both <code>fake</code> and <code>real</code> images, while simple
                   explanations are only provided for <code>fake</code>. The test split
-                  contains a <code>manifest.jsonl</code> file and multipart image tar
-                  files for final submission.
+                  contains a <code>manifest.jsonl</code> file and a flat{' '}
+                  <code>images</code> directory for final submission.
                 </p>
 
                 <pre className="code-card">
                   <code>{datasetLayout}</code>
                 </pre>
-
-                <p className="inline-note">
-                  The test image archives are stored directly under <code>test/</code>.
-                  After joining and extracting the multipart tar files, they unpack into
-                  a flat <code>images/</code> directory.
-                </p>
               </article>
 
               <article className="content-card prose-card detail-section-block">
@@ -923,6 +918,11 @@ function App() {
                   authenticity label.
                 </p>
 
+                <p>
+                  Task 2 has two required explanation outputs for the same image:
+                  one complex explanation and one simple explanation.
+                </p>
+
                 <div className="card-grid two-up nested-grid">
                   {explanationTracks.map((track) => (
                     <div key={track.title} className="track-card">
@@ -1026,7 +1026,7 @@ function App() {
                 </p>
 
                 <pre className="code-card">
-                  <code>{submissionZipCommand}</code>
+                  <code>{submissionPackageLayout}</code>
                 </pre>
               </article>
 
@@ -1087,6 +1087,14 @@ function App() {
                     ))}
                   </tbody>
                 </table>
+
+                <p className="inline-note">
+                  After the leaderboard phase, the organizers will select the top 5
+                  teams and compute the complete complex-explanation metrics for final
+                  reporting, including <code>complex_entity_f1</code>,{' '}
+                  <code>complex_evidence_f1</code>, and{' '}
+                  <code>complex_overall_score</code>.
+                </p>
               </article>
             </div>
           </div>
@@ -1173,7 +1181,7 @@ function App() {
               </article>
 
               <article className="content-card prose-card detail-section-block">
-                <h3>Simple Explanation Metrics</h3>
+                <h3>Task 2: Simple Explanation Metrics</h3>
                 <p>
                   The simple explanation track is designed to reward two things at the
                   same time: faithfulness and simplicity. A good simple explanation
@@ -1527,8 +1535,8 @@ function App() {
           <div className="footer-links">
             <button type="button" onClick={() => navigateTo('overview')}>Overview</button>
             <button type="button" onClick={() => navigateTo('details')}>Details</button>
-            <button type="button" onClick={() => navigateTo('submission')}>Submission</button>
             <button type="button" onClick={() => navigateTo('metrics')}>Metrics</button>
+            <button type="button" onClick={() => navigateTo('submission')}>Submission</button>
             <button type="button" onClick={() => navigateTo('timeline')}>Timeline</button>
             <button type="button" onClick={() => navigateTo('people')}>Contact</button>
           </div>

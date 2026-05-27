@@ -82,18 +82,23 @@ img {
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.topbar .container {
+  width: min(1360px, calc(100vw - 24px));
+}
+
 .topbar-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
-  min-height: 78px;
+  gap: 12px;
+  min-height: 72px;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
+  flex: 0 1 292px;
   min-width: 0;
 }
 
@@ -107,9 +112,9 @@ img {
 }
 
 .brand-badge {
-  width: 42px;
-  height: 42px;
-  border-radius: 14px;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
   display: grid;
   place-items: center;
   background: linear-gradient(135deg, rgba(142, 182, 255, 0.34), rgba(111, 161, 255, 0.14));
@@ -119,30 +124,31 @@ img {
 }
 
 .brand-title {
-  font-size: 0.98rem;
+  font-size: 0.9rem;
   font-weight: 700;
   line-height: 1.2;
 }
 
 .brand-subtitle {
   color: var(--muted);
-  font-size: 0.8rem;
+  font-size: 0.74rem;
 }
 
 .nav {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 12px;
   flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .nav button {
-  padding: 8px 0;
+  padding: 6px 0;
   border: 0;
   border-bottom: 2px solid transparent;
   background: transparent;
   color: var(--muted);
-  font-size: 0.94rem;
+  font-size: 0.88rem;
   cursor: pointer;
   transition: color 0.2s ease, border-color 0.2s ease;
 }
