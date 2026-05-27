@@ -1,6 +1,6 @@
 import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ArrowRight,
   ClipboardPenLine,
@@ -446,6 +446,18 @@ type PageId =
   | 'timeline'
   | 'people';
 
+const pageIds: PageId[] = [
+  'overview',
+  'details',
+  'tasks',
+  'metrics',
+  'submission',
+  'resources',
+  'registration',
+  'timeline',
+  'people',
+];
+
 const navItems: { label: string; page: PageId }[] = [
   { label: 'Overview', page: 'overview' },
   { label: 'Details', page: 'details' },
@@ -457,6 +469,20 @@ const navItems: { label: string; page: PageId }[] = [
   { label: 'Timeline', page: 'timeline' },
   { label: 'People', page: 'people' },
 ] as const;
+
+function isPageId(value: string): value is PageId {
+  return pageIds.includes(value as PageId);
+}
+
+function getPageFromHash(): PageId {
+  const hashPage = window.location.hash.replace(/^#/, '');
+
+  if (isPageId(hashPage)) {
+    return hashPage;
+  }
+
+  return 'overview';
+}
 
 function hasLink(href?: string) {
   return Boolean(href && href.trim().length > 0);
@@ -550,10 +576,28 @@ function PersonCard({
 }
 
 function App() {
-  const [activePage, setActivePage] = useState<PageId>('overview');
+  const [activePage, setActivePage] = useState<PageId>(getPageFromHash);
+
+  useEffect(() => {
+    const syncPageWithUrl = () => {
+      setActivePage(getPageFromHash());
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    window.addEventListener('hashchange', syncPageWithUrl);
+    window.addEventListener('popstate', syncPageWithUrl);
+
+    return () => {
+      window.removeEventListener('hashchange', syncPageWithUrl);
+      window.removeEventListener('popstate', syncPageWithUrl);
+    };
+  }, []);
 
   const navigateTo = (page: PageId) => {
     setActivePage(page);
+    if (window.location.hash !== `#${page}`) {
+      window.history.pushState(null, '', `#${page}`);
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
