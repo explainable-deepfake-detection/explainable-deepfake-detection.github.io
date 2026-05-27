@@ -42,7 +42,7 @@ const LINKS = {
 
 const stats = [
   { value: DATASET.name, label: 'Official Benchmark' },
-  { value: DATASET.totalImages, label: 'Images in Current Release' },
+  { value: DATASET.totalImages, label: 'Images' },
   { value: '2', label: 'Challenge Tasks' },
   { value: 'ACM MM 2026', label: 'Grand Challenge' },
 ];
@@ -77,6 +77,7 @@ const heroHighlights = [
   { label: 'Training split', value: '450,000 images' },
   { label: 'Validation split', value: '110,000 images' },
   { label: 'Test split', value: `${DATASET.testImages} images` },
+  { label: 'Submission deadline', value: '15 Jun 2026' },
   { label: 'Submission fields', value: 'Detection + complex + simple explanations' },
 ];
 
@@ -136,6 +137,51 @@ const submissionFormatRows = [
   },
 ];
 
+const submissionPolicyRows = [
+  {
+    item: 'Detection coverage',
+    detail:
+      'Submit one detection row for every final-test image. Missing detection rows are treated as incorrect predictions.',
+  },
+  {
+    item: 'Explanation coverage',
+    detail:
+      'Complex and simple explanation files are evaluated on the explanation-evaluation subset. Missing explanation rows receive zero score for those samples.',
+  },
+  {
+    item: 'Archive structure',
+    detail:
+      'Place detection.jsonl, complex.jsonl, and simple.jsonl at the root of the submitted zip file, with no top-level folder.',
+  },
+  {
+    item: 'Filename matching',
+    detail:
+      'Every id value must exactly match the released test image filename, including the extension.',
+  },
+];
+
+const submissionScoreRows = [
+  {
+    metric: 'Task 1',
+    summary: 'Detection F1 and detection accuracy over all final-test images.',
+  },
+  {
+    metric: 'Task 2',
+    summary:
+      'Explanation score on the 10,000-sample explanation-evaluation subset.',
+  },
+  {
+    metric: 'Explanation score',
+    summary: '(complex_bert_f1 + simple_overall_score) / 2.',
+  },
+];
+
+const testArchiveCommand = `cd XPlainVerse
+cat test/test_images.tar.part-* > test/test_images.tar
+tar -xf test/test_images.tar -C test`;
+
+const submissionZipCommand = `zip submission.zip detection.jsonl complex.jsonl simple.jsonl`;
+
 const detectionMetricItems = [
   {
     name: 'detection_f1',
@@ -158,17 +204,17 @@ const complexMetricItems = [
   {
     name: 'complex_entity_f1',
     text:
-      'Qwen 3.5 4B extracts diagnostic entities from both the ground-truth explanation and the predicted explanation. It then checks whether the ground-truth entities are covered by the prediction and whether the predicted entities are covered by the ground truth, and combines those two directional scores into an F1.',
+      'Additional final-reporting metric. Qwen 3.5 4B extracts diagnostic entities from both the ground-truth explanation and the predicted explanation, checks coverage in both directions, and combines those directional scores into an F1.',
   },
   {
     name: 'complex_evidence_f1',
     text:
-      'Qwen 3.5 4B extracts evidence claims from both the ground-truth explanation and the predicted explanation. It then checks whether the ground-truth claims are covered by the prediction and whether the predicted claims are covered by the ground truth, and combines those two directional scores into an F1.',
+      'Additional final-reporting metric. Qwen 3.5 4B extracts evidence claims from both the ground-truth explanation and the predicted explanation, checks coverage in both directions, and combines those directional scores into an F1.',
   },
   {
     name: 'complex_overall_score',
     text:
-      'Final complex explanation score: 30% semantic similarity, 40% entity overlap, and 30% evidence overlap.',
+      'Additional final-reporting score: 30% semantic similarity, 40% entity overlap, and 30% evidence overlap.',
   },
 ];
 
@@ -380,7 +426,9 @@ const datasetLayout = `XPlainVerse/
 |       '-- fake/
 '-- test/
     |-- manifest.jsonl
-    '-- images/`;
+    |-- test_images.tar.part-000
+    |-- test_images.tar.part-001
+    '-- ...`;
 
 const manifestExample = `{"label":"fake","image_path":"train/images/fake/00023c53a28055f94cc742f4.png","complex_explanation_path":"train/complex_explanations/fake/00023c53a28055f94cc742f4.json","simple_explanation_path":"train/simple_explanations/fake/00023c53a28055f94cc742f4.json"}`;
 
@@ -391,6 +439,7 @@ type PageId =
   | 'overview'
   | 'details'
   | 'tasks'
+  | 'submission'
   | 'metrics'
   | 'resources'
   | 'registration'
@@ -401,6 +450,7 @@ const navItems: { label: string; page: PageId }[] = [
   { label: 'Overview', page: 'overview' },
   { label: 'Details', page: 'details' },
   { label: 'Tasks', page: 'tasks' },
+  { label: 'Submission', page: 'submission' },
   { label: 'Metrics', page: 'metrics' },
   { label: 'Resources', page: 'resources' },
   { label: 'Registration', page: 'registration' },
@@ -576,10 +626,23 @@ function App() {
                 <button
                   className="button button-primary"
                   type="button"
-                  onClick={() => navigateTo('details')}
+                  onClick={() => navigateTo('submission')}
                 >
-                  Challenge Details <ArrowRight size={18} />
+                  Submission Guide <ArrowRight size={18} />
                 </button>
+                {hasLink(LINKS.codabench) ? (
+                  <a
+                    className="button button-primary"
+                    href={LINKS.codabench}
+                    {...getLinkProps(LINKS.codabench)}
+                  >
+                    Submit on Codabench
+                  </a>
+                ) : (
+                  <span className="button button-secondary button-disabled">
+                    Codabench coming soon
+                  </span>
+                )}
                 <a
                   className="button button-secondary"
                   href={LINKS.dataset}
@@ -595,9 +658,9 @@ function App() {
                 <div className="panel-kicker">Dataset Snapshot</div>
                 <h3>Current XPlainVerse Release</h3>
                 <p>
-                  The current XPlainVerse release provides training and validation data
-                  for both challenge tasks, together with complex explanations for both
-                  classes, simple explanations for fake samples, and manifest metadata.
+                  The XPlainVerse release for this challenge provides training and
+                  validation data for both challenge tasks, the final-test image split,
+                  explanation annotations for development, and manifest metadata.
                 </p>
 
                 <div className="panel-metrics">
@@ -724,13 +787,19 @@ function App() {
                   <code>manifest.jsonl</code> file. Complex explanations are organized
                   for both <code>fake</code> and <code>real</code> images, while simple
                   explanations are only provided for <code>fake</code>. The test split
-                  contains a <code>manifest.jsonl</code> file and a flat{' '}
-                  <code>images</code> directory for final submission.
+                  contains a <code>manifest.jsonl</code> file and multipart image tar
+                  files for final submission.
                 </p>
 
                 <pre className="code-card">
                   <code>{datasetLayout}</code>
                 </pre>
+
+                <p className="inline-note">
+                  The test image archives are stored directly under <code>test/</code>.
+                  After joining and extracting the multipart tar files, they unpack into
+                  a flat <code>images/</code> directory.
+                </p>
               </article>
 
               <article className="content-card prose-card detail-section-block">
@@ -873,12 +942,49 @@ function App() {
 
                 <p className="inline-note">
                   The official submission package is split into separate detection,
-                  complex explanation, and simple explanation files.
+                  complex explanation, and simple explanation files. See the
+                  Submission tab for the exact JSONL files and packaging rules.
                 </p>
               </article>
+            </div>
+          </div>
+        </section>
+        )}
 
-              <article className="content-card prose-card task-detail-card">
-                <h3>Submission Format</h3>
+        {activePage === 'submission' && (
+        <section id="submission" className="section section-alt">
+          <div className="container narrow-layout">
+            <SectionHeader
+              eyebrow="Submission"
+              title="Submission Guide"
+              text="What to submit, how to package it, and how the leaderboard treats missing rows."
+            />
+
+            <div className="details-stack">
+              <article className="content-card prose-card detail-section-block">
+                <h3>Codabench Submission</h3>
+                <p>
+                  Official final-test submissions will be handled through Codabench.
+                  The platform link will be added here when submissions open.
+                </p>
+
+                <div className="hero-actions">
+                  {hasLink(LINKS.codabench) ? (
+                    <a
+                      className="button button-primary"
+                      href={LINKS.codabench}
+                      {...getLinkProps(LINKS.codabench)}
+                    >
+                      Submit on Codabench <ArrowRight size={18} />
+                    </a>
+                  ) : (
+                    <span className="status-pill large">Codabench coming soon</span>
+                  )}
+                </div>
+              </article>
+
+              <article className="content-card prose-card detail-section-block">
+                <h3>Required Files</h3>
                 <p>
                   Submissions should be provided as JSONL files. The <code>id</code>{' '}
                   value must exactly match the released test image filename, including
@@ -901,6 +1007,82 @@ function App() {
                         </td>
                         <td>{row.rows}</td>
                         <td>{row.fields}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                <p className="inline-note">
+                  For <code>detection.jsonl</code>, <code>pred_label</code> must be{' '}
+                  <code>0</code> for real and <code>1</code> for fake.
+                </p>
+              </article>
+
+              <article className="content-card prose-card detail-section-block">
+                <h3>Package Layout</h3>
+                <p>
+                  The submitted zip should contain the three JSONL files at its root.
+                  Do not place the files inside a top-level folder.
+                </p>
+
+                <pre className="code-card">
+                  <code>{submissionZipCommand}</code>
+                </pre>
+              </article>
+
+              <article className="content-card prose-card detail-section-block">
+                <h3>Test Image Archives</h3>
+                <p>
+                  The test images are released as multipart tar files stored directly
+                  under <code>test/</code>. Join the parts first, then extract the tar
+                  archive. The archive extracts into a flat <code>images/</code>{' '}
+                  directory under <code>test/</code>.
+                </p>
+
+                <pre className="code-card">
+                  <code>{testArchiveCommand}</code>
+                </pre>
+              </article>
+
+              <article className="content-card prose-card detail-section-block">
+                <h3>Missing Rows and Matching</h3>
+                <table className="data-table dense-table">
+                  <thead>
+                    <tr>
+                      <th>Item</th>
+                      <th>Policy</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {submissionPolicyRows.map((row) => (
+                      <tr key={row.item}>
+                        <td>{row.item}</td>
+                        <td>{row.detail}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </article>
+
+              <article className="content-card prose-card detail-section-block">
+                <h3>Scoring Summary</h3>
+                <p>
+                  The leaderboard uses standard detection metrics for Task 1 and the
+                  combined explanation score for Task 2.
+                </p>
+
+                <table className="data-table dense-table">
+                  <thead>
+                    <tr>
+                      <th>Metric group</th>
+                      <th>Summary</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {submissionScoreRows.map((row) => (
+                      <tr key={row.metric}>
+                        <td>{row.metric}</td>
+                        <td>{row.summary}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -954,6 +1136,14 @@ function App() {
                   explanations before checking coverage in both directions.
                 </p>
 
+                <p className="inline-note">
+                  The public Codabench leaderboard uses <code>complex_bert_f1</code>{' '}
+                  for complex explanations. <code>complex_entity_f1</code>,{' '}
+                  <code>complex_evidence_f1</code>, and{' '}
+                  <code>complex_overall_score</code> are additional final-reporting
+                  metrics for the top 5 teams, not the full public leaderboard score.
+                </p>
+
                 <div className="card-grid two-up nested-grid">
                   {complexMetricItems.map((metric) => (
                     <div key={metric.name} className="metric-card">
@@ -978,9 +1168,7 @@ function App() {
                 <p className="inline-note">
                   For Codabench leaderboard scoring, complex explanations are scored
                   with <code>complex_bert_f1</code> on the 10,000-sample
-                  explanation-evaluation subset. For the top 5 teams, organizers will
-                  additionally compute <code>complex_entity_f1</code> and{' '}
-                  <code>complex_evidence_f1</code> for final reporting and analysis.
+                  explanation-evaluation subset.
                 </p>
               </article>
 
@@ -1199,6 +1387,15 @@ function App() {
               text="Important dates for the challenge."
             />
 
+            <article className="content-card prose-card timeline-highlight-card">
+              <div className="registration-step-label">Key deadline</div>
+              <h3>Result submissions close on 15 Jun 2026</h3>
+              <p>
+                Submit final-test results before this deadline. Challenge paper
+                submissions are due separately on 30 Jun 2026.
+              </p>
+            </article>
+
             <div className="timeline">
               {[
                 {
@@ -1213,12 +1410,12 @@ function App() {
                   description: 'Leaderboard and result submission open.',
                 },
                 {
-                  date: '15 June 2026',
+                  date: '15 Jun 2026',
                   title: 'Result submission deadline',
                   description: 'Final deadline for submitting challenge results.',
                 },
                 {
-                  date: '30 June 2026',
+                  date: '30 Jun 2026',
                   title: 'Paper submission deadline',
                   description: 'Deadline for challenge paper submission.',
                 },
@@ -1228,7 +1425,7 @@ function App() {
                   description: 'Acceptance decisions released to participants.',
                 },
                 {
-                  date: '06 Aug 2026',
+                  date: '6 Aug 2026',
                   title: 'Camera-ready deadline',
                   description: 'Final camera-ready papers due.',
                 },
@@ -1330,6 +1527,7 @@ function App() {
           <div className="footer-links">
             <button type="button" onClick={() => navigateTo('overview')}>Overview</button>
             <button type="button" onClick={() => navigateTo('details')}>Details</button>
+            <button type="button" onClick={() => navigateTo('submission')}>Submission</button>
             <button type="button" onClick={() => navigateTo('metrics')}>Metrics</button>
             <button type="button" onClick={() => navigateTo('timeline')}>Timeline</button>
             <button type="button" onClick={() => navigateTo('people')}>Contact</button>
