@@ -1005,6 +1005,11 @@ function App() {
                   Official final-test submissions will be handled through Codabench.
                   The platform link will be added here when submissions open.
                 </p>
+                <p>
+                  Each team can have only one public leaderboard entry. Teams may
+                  choose which submitted run to display on the leaderboard using the
+                  submission controls in Codabench.
+                </p>
 
                 <div className="hero-actions">
                   {hasLink(LINKS.codabench) ? (
