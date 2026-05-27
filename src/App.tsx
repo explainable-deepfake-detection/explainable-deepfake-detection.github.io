@@ -428,7 +428,6 @@ const datasetLayout = `XPlainVerse/
 |   '-- simple_explanations/
 |       '-- fake/
 '-- test/
-    |-- manifest.jsonl
     '-- images/`;
 
 const manifestExample = `{"label":"fake","image_path":"train/images/fake/00023c53a28055f94cc742f4.png","complex_explanation_path":"train/complex_explanations/fake/00023c53a28055f94cc742f4.json","simple_explanation_path":"train/simple_explanations/fake/00023c53a28055f94cc742f4.json"}`;
@@ -787,9 +786,9 @@ function App() {
                   <code>simple_explanations</code> directories, and a{' '}
                   <code>manifest.jsonl</code> file. Complex explanations are organized
                   for both <code>fake</code> and <code>real</code> images, while simple
-                  explanations are only provided for <code>fake</code>. The test split
-                  contains a <code>manifest.jsonl</code> file and a flat{' '}
-                  <code>images</code> directory for final submission.
+                  explanations are only provided for <code>fake</code>. After
+                  extracting the released multipart archives, the test split contains a
+                  flat <code>images</code> directory for final submission.
                 </p>
 
                 <pre className="code-card">
@@ -810,11 +809,6 @@ function App() {
                 <pre className="code-card code-compact">
                   <code>{manifestExample}</code>
                 </pre>
-
-                <p className="inline-note">
-                  The final-test manifest is used to identify released test images.
-                  Ground-truth labels and reference explanations are held out.
-                </p>
               </article>
 
               <article className="content-card prose-card detail-section-block">
