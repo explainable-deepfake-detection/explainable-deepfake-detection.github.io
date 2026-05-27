@@ -114,6 +114,19 @@ const explanationTracks = [
   },
 ];
 
+const detectionMetricItems = [
+  {
+    name: 'detection_f1',
+    text:
+      'F1 score for the fake class, computed over all final-test images.',
+  },
+  {
+    name: 'detection_accuracy',
+    text:
+      'Overall real/fake classification accuracy over all final-test images.',
+  },
+];
+
 const complexMetricItems = [
   {
     name: 'complex_bert_f1',
@@ -126,14 +139,14 @@ const complexMetricItems = [
       'Qwen 3.5 4B extracts diagnostic entities from both the ground-truth explanation and the predicted explanation. It then checks whether the ground-truth entities are covered by the prediction and whether the predicted entities are covered by the ground truth, and combines those two directional scores into an F1.',
   },
   {
-    name: 'complex_facts_f1',
+    name: 'complex_evidence_f1',
     text:
-      'Qwen 3.5 4B extracts evidence facts or claims from both the ground-truth explanation and the predicted explanation. It then checks whether the ground-truth facts are covered by the prediction and whether the predicted facts are covered by the ground truth, and combines those two directional scores into an F1.',
+      'Qwen 3.5 4B extracts evidence claims from both the ground-truth explanation and the predicted explanation. It then checks whether the ground-truth claims are covered by the prediction and whether the predicted claims are covered by the ground truth, and combines those two directional scores into an F1.',
   },
   {
     name: 'complex_overall_score',
     text:
-      'Final complex explanation score: 30% semantic similarity, 40% entity overlap, and 30% fact overlap.',
+      'Final complex explanation score: 30% semantic similarity, 40% entity overlap, and 30% evidence overlap.',
   },
 ];
 
@@ -155,13 +168,16 @@ const simpleMetricItems = [
   },
 ];
 
+const detectionMetricFormula = `detection_f1 = F1(fake)
+detection_accuracy = correct_labels / total_images`;
+
 const complexMetricFormula = `complex_entity_f1 = harmonic_mean(entity_precision, entity_recall)
-complex_facts_f1 = harmonic_mean(fact_precision, fact_recall)
+complex_evidence_f1 = harmonic_mean(evidence_precision, evidence_recall)
 
 complex_overall_score =
   0.3 * complex_bert_f1 +
   0.4 * complex_entity_f1 +
-  0.3 * complex_facts_f1`;
+  0.3 * complex_evidence_f1`;
 
 const simpleMetricFormula = `simple_sle_norm = clip(simple_sle_score, -1, 4)
 simple_sle_norm = (simple_sle_norm + 1) / 5
@@ -169,6 +185,32 @@ simple_sle_norm = (simple_sle_norm + 1) / 5
 simple_overall_score =
   0.7 * simple_bert_f1 +
   0.3 * simple_sle_norm`;
+
+const explanationMetricFormula = `explanation_score =
+  (complex_bert_f1 + simple_overall_score) / 2`;
+
+const validationBaselineRows = [
+  {
+    model: 'Qwen3-VL-8B-XPlainVerse',
+    detectionF1: '0.713070',
+    detectionAccuracy: '0.749027',
+    complexBertF1: '0.677412',
+    simpleBertF1: '0.682438',
+    simpleSleNorm: '0.560891',
+    simpleOverall: '0.645974',
+    explanationScore: '0.661693',
+  },
+  {
+    model: 'InternVL3.5-14B-XPlainVerse',
+    detectionF1: '0.624027',
+    detectionAccuracy: '0.668991',
+    complexBertF1: '0.665358',
+    simpleBertF1: '0.672473',
+    simpleSleNorm: '0.563061',
+    simpleOverall: '0.639649',
+    explanationScore: '0.652504',
+  },
+];
 
 const resources: Resource[] = [
   {
@@ -702,8 +744,8 @@ function App() {
 
                 <p>
                   The model output for each test image should be a single authenticity
-                  prediction. The official evaluation metric and submission template will
-                  be released together with the test set and evaluation package.
+                  prediction. Task 1 is evaluated with detection F1 and detection
+                  accuracy over the final-test images.
                 </p>
               </article>
 
@@ -773,13 +815,34 @@ function App() {
           <div className="container narrow-layout">
             <SectionHeader
               eyebrow="Metrics"
-              title="How Task 2 Is Evaluated"
-              text="The public evaluator scores complex and simple explanations separately. Complex explanations are judged on semantic match and evidence overlap, while simple explanations are judged on semantic match and simplicity."
+              title="Evaluation"
+              text="Task 1 evaluates image-level detection. Task 2 evaluates complex and simple explanations on the explanation-evaluation subset."
             />
 
             <div className="details-stack">
               <article className="content-card prose-card detail-section-block">
-                <h3>Complex Explanation Metrics</h3>
+                <h3>Task 1: Detection Metrics</h3>
+                <p>
+                  Deepfake detection is scored over all final-test images using standard
+                  binary classification metrics.
+                </p>
+
+                <div className="card-grid two-up nested-grid">
+                  {detectionMetricItems.map((metric) => (
+                    <div key={metric.name} className="metric-card">
+                      <div className="metric-name">{metric.name}</div>
+                      <p>{metric.text}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <pre className="code-card">
+                  <code>{detectionMetricFormula}</code>
+                </pre>
+              </article>
+
+              <article className="content-card prose-card detail-section-block">
+                <h3>Task 2: Complex Explanation Metrics</h3>
                 <p>
                   The complex explanation track asks a simple question: does the
                   prediction say the same important things as the reference, and does
@@ -804,11 +867,19 @@ function App() {
                 </pre>
 
                 <p className="inline-note">
-                  In other words, the evaluator first extracts entities and facts from
-                  one explanation, checks whether they are covered by the other
-                  explanation, and then repeats the same process in reverse. This
+                  In other words, the evaluator first extracts entities and evidence
+                  claims from one explanation, checks whether they are covered by the
+                  other explanation, and then repeats the same process in reverse. This
                   rewards explanations that recover the same evidence without adding
                   unsupported content.
+                </p>
+
+                <p className="inline-note">
+                  For Codabench leaderboard scoring, complex explanations are scored
+                  with <code>complex_bert_f1</code> on the 10,000-sample
+                  explanation-evaluation subset. For the top 5 teams, organizers will
+                  additionally compute <code>complex_entity_f1</code> and{' '}
+                  <code>complex_evidence_f1</code> for final reporting and analysis.
                 </p>
               </article>
 
@@ -836,10 +907,59 @@ function App() {
 
                 <p className="inline-note">
                   The raw SLE value is clipped and normalized before it is combined
-                  with BERTScore. In the dataset, because the real samples
-                  has no separate simple explanation, the complex explanation is used
+                  with BERTScore. In the dataset, because real samples
+                  have no separate simple explanation, the complex explanation is used
                   as the simple reference.
                 </p>
+              </article>
+
+              <article className="content-card prose-card detail-section-block">
+                <h3>Overall Explanation Score</h3>
+                <p>
+                  Task 2 combines the complex and simple tracks on the same
+                  10,000-sample explanation-evaluation subset.
+                </p>
+
+                <pre className="code-card">
+                  <code>{explanationMetricFormula}</code>
+                </pre>
+              </article>
+
+              <article className="content-card prose-card detail-section-block">
+                <h3>Validation Baselines</h3>
+                <p>
+                  The following validation results are reported for the fine-tuned
+                  baseline models.
+                </p>
+
+                <table className="data-table dense-table">
+                  <thead>
+                    <tr>
+                      <th>Model</th>
+                      <th>Detection F1</th>
+                      <th>Detection Accuracy</th>
+                      <th>Complex BERT F1</th>
+                      <th>Simple BERT F1</th>
+                      <th>Simple SLE Norm</th>
+                      <th>Simple Overall</th>
+                      <th>Explanation Score</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {validationBaselineRows.map((row) => (
+                      <tr key={row.model}>
+                        <td>{row.model}</td>
+                        <td>{row.detectionF1}</td>
+                        <td>{row.detectionAccuracy}</td>
+                        <td>{row.complexBertF1}</td>
+                        <td>{row.simpleBertF1}</td>
+                        <td>{row.simpleSleNorm}</td>
+                        <td>{row.simpleOverall}</td>
+                        <td>{row.explanationScore}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </article>
             </div>
           </div>
