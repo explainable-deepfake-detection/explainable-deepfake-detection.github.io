@@ -1,5 +1,6 @@
 import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { useState } from 'react';
 import {
   ArrowRight,
   ClipboardPenLine,
@@ -355,16 +356,25 @@ const manifestExample = `{"label":"fake","image_path":"train/images/fake/00023c5
 const downloadCommand = `huggingface-cli login
 huggingface-cli download ${DATASET.repoId} --repo-type dataset --local-dir ./XPlainVerse`;
 
-const navItems = [
-  ['Overview', '#overview'],
-  ['Details', '#details'],
-  ['Tasks', '#tasks'],
-  ['Metrics', '#metrics'],
-  ['Resources', '#resources'],
-  ['Registration', '#registration'],
-  ['Timeline', '#timeline'],
-  ['People', '#people'],
-  ['Contact', '#contact'],
+type PageId =
+  | 'overview'
+  | 'details'
+  | 'tasks'
+  | 'metrics'
+  | 'resources'
+  | 'registration'
+  | 'timeline'
+  | 'people';
+
+const navItems: { label: string; page: PageId }[] = [
+  { label: 'Overview', page: 'overview' },
+  { label: 'Details', page: 'details' },
+  { label: 'Tasks', page: 'tasks' },
+  { label: 'Metrics', page: 'metrics' },
+  { label: 'Resources', page: 'resources' },
+  { label: 'Registration', page: 'registration' },
+  { label: 'Timeline', page: 'timeline' },
+  { label: 'People', page: 'people' },
 ] as const;
 
 function hasLink(href?: string) {
@@ -459,33 +469,51 @@ function PersonCard({
 }
 
 function App() {
+  const [activePage, setActivePage] = useState<PageId>('overview');
+
+  const navigateTo = (page: PageId) => {
+    setActivePage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="site-shell">
       <header className="topbar">
         <div className="container topbar-inner">
-          <a className="brand" href="#top">
+          <button className="brand brand-button" type="button" onClick={() => navigateTo('overview')}>
             <div className="brand-badge">DFX</div>
             <div>
               <div className="brand-title">{SITE.shortTitle}</div>
               <div className="brand-subtitle">{SITE.location}</div>
             </div>
-          </a>
+          </button>
 
           <nav className="nav desktop-nav" aria-label="Primary">
-            {navItems.map(([label, href]) => (
-              <a key={label} href={href}>
+            {navItems.map(({ label, page }) => (
+              <button
+                key={page}
+                className={activePage === page ? 'active' : undefined}
+                type="button"
+                onClick={() => navigateTo(page)}
+              >
                 {label}
-              </a>
+              </button>
             ))}
           </nav>
 
-          <a className="button button-small button-primary" href="#registration">
+          <button
+            className="button button-small button-primary"
+            type="button"
+            onClick={() => navigateTo('registration')}
+          >
             Register
-          </a>
+          </button>
         </div>
       </header>
 
-      <main id="top">
+      <main id="top" className="page-main">
+        {activePage === 'overview' && (
+        <>
         <section className="hero">
           <div className="container hero-grid">
             <div>
@@ -515,9 +543,13 @@ function App() {
               </p>
 
               <div className="hero-actions">
-                <a className="button button-primary" href="#details">
+                <button
+                  className="button button-primary"
+                  type="button"
+                  onClick={() => navigateTo('details')}
+                >
                   Challenge Details <ArrowRight size={18} />
-                </a>
+                </button>
                 <a
                   className="button button-secondary"
                   href={LINKS.dataset}
@@ -597,7 +629,10 @@ function App() {
             </article>
           </div>
         </section>
+        </>
+        )}
 
+        {activePage === 'details' && (
         <section id="details" className="section section-alt">
           <div className="container narrow-layout">
             <SectionHeader
@@ -702,7 +737,9 @@ function App() {
             </div>
           </div>
         </section>
+        )}
 
+        {activePage === 'tasks' && (
         <section id="tasks" className="section">
           <div className="container narrow-layout">
             <SectionHeader
@@ -810,7 +847,9 @@ function App() {
             </div>
           </div>
         </section>
+        )}
 
+        {activePage === 'metrics' && (
         <section id="metrics" className="section section-alt">
           <div className="container narrow-layout">
             <SectionHeader
@@ -964,7 +1003,9 @@ function App() {
             </div>
           </div>
         </section>
+        )}
 
+        {activePage === 'resources' && (
         <section id="resources" className="section section-alt">
           <div className="container">
             <SectionHeader
@@ -991,7 +1032,9 @@ function App() {
             </div>
           </div>
         </section>
+        )}
 
+        {activePage === 'registration' && (
         <section id="registration" className="section">
           <div className="container">
             <SectionHeader
@@ -1083,7 +1126,9 @@ function App() {
             </article>
           </div>
         </section>
+        )}
 
+        {activePage === 'timeline' && (
         <section id="timeline" className="section section-alt">
           <div className="container">
             <SectionHeader
@@ -1141,7 +1186,10 @@ function App() {
             </div>
           </div>
         </section>
+        )}
 
+        {activePage === 'people' && (
+        <>
         <section id="people" className="section">
           <div className="container">
             <SectionHeader
@@ -1206,6 +1254,8 @@ function App() {
             </div>
           </div>
         </section>
+        </>
+        )}
       </main>
 
       <footer className="footer">
@@ -1216,11 +1266,11 @@ function App() {
           </div>
 
           <div className="footer-links">
-            <a href="#overview">Overview</a>
-            <a href="#details">Details</a>
-            <a href="#metrics">Metrics</a>
-            <a href="#registration">Registration</a>
-            <a href="#timeline">Schedule</a>
+            <button type="button" onClick={() => navigateTo('overview')}>Overview</button>
+            <button type="button" onClick={() => navigateTo('details')}>Details</button>
+            <button type="button" onClick={() => navigateTo('metrics')}>Metrics</button>
+            <button type="button" onClick={() => navigateTo('timeline')}>Timeline</button>
+            <button type="button" onClick={() => navigateTo('people')}>Contact</button>
           </div>
         </div>
       </footer>

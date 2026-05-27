@@ -46,6 +46,10 @@ a {
   text-decoration: none;
 }
 
+button {
+  font: inherit;
+}
+
 img {
   display: block;
   max-width: 100%;
@@ -63,6 +67,10 @@ img {
 
 .site-shell {
   min-height: 100vh;
+}
+
+.page-main {
+  min-height: 68vh;
 }
 
 .topbar {
@@ -87,6 +95,15 @@ img {
   align-items: center;
   gap: 14px;
   min-width: 0;
+}
+
+.brand-button {
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
 }
 
 .brand-badge {
@@ -119,17 +136,27 @@ img {
   flex-wrap: wrap;
 }
 
-.nav a {
+.nav button {
+  padding: 8px 0;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
   color: var(--muted);
   font-size: 0.94rem;
-  transition: color 0.2s ease;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
 }
 
-.nav a:hover,
+.nav button:hover,
+.nav button.active,
 .text-link:hover,
 .inline-link:hover,
 .person-name:hover {
   color: var(--muted-strong);
+}
+
+.nav button.active {
+  border-bottom-color: var(--accent);
 }
 
 .hero {
@@ -224,6 +251,7 @@ img {
   border-radius: 14px;
   font-weight: 700;
   border: 1px solid transparent;
+  cursor: pointer;
   transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
 }
 
@@ -853,11 +881,19 @@ img {
   color: var(--muted-strong);
 }
 
-@media (max-width: 1080px) {
-  .desktop-nav {
-    display: none;
-  }
+.footer-links button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
 
+.footer-links button:hover {
+  color: var(--text);
+}
+
+@media (max-width: 1080px) {
   .hero-grid,
   .card-grid.two-up,
   .card-grid.three-up,
@@ -876,16 +912,36 @@ img {
 }
 
 @media (max-width: 720px) {
+  .topbar {
+    position: static;
+  }
+
   .hero {
     padding-top: 46px;
   }
 
   .topbar-inner {
     min-height: 70px;
+    align-items: flex-start;
+    flex-direction: column;
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+
+  .nav {
+    width: 100%;
+    gap: 16px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+  }
+
+  .nav button {
+    flex: 0 0 auto;
   }
 
   .button-small {
-    display: none;
+    align-self: flex-start;
   }
 
   .stats-grid {
