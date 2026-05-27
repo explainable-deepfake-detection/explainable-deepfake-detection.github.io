@@ -596,7 +596,7 @@ function App() {
   const navigateTo = (page: PageId) => {
     setActivePage(page);
     if (window.location.hash !== `#${page}`) {
-      window.history.pushState(null, '', `#${page}`);
+      window.location.hash = page;
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
