@@ -401,11 +401,16 @@ img {
 }
 
 .card-grid.two-up,
-.people-grid,
 .contact-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
+}
+
+.people-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
 }
 
 .card-grid.three-up {
@@ -778,27 +783,27 @@ img {
 }
 
 .people-block + .people-block {
-  margin-top: 34px;
+  margin-top: 26px;
 }
 
 .people-subheading {
-  font-size: 1.2rem;
+  font-size: 1.05rem;
   font-weight: 800;
-  margin-bottom: 18px;
+  margin-bottom: 12px;
   color: var(--muted-strong);
 }
 
 .person-card {
-  padding: 18px;
+  padding: 14px;
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 12px;
 }
 
 .person-image-wrap {
-  width: 88px;
-  height: 88px;
-  border-radius: 20px;
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
   overflow: hidden;
   flex: 0 0 auto;
   background: rgba(255, 255, 255, 0.06);
@@ -818,16 +823,17 @@ img {
 .person-name {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-size: 1.06rem;
+  gap: 6px;
+  font-size: 0.96rem;
   font-weight: 800;
   color: var(--text);
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .person-affiliation {
   color: var(--muted);
-  line-height: 1.6;
+  font-size: 0.88rem;
+  line-height: 1.45;
 }
 
 .contact-section {
@@ -897,7 +903,6 @@ img {
   .hero-grid,
   .card-grid.two-up,
   .card-grid.three-up,
-  .people-grid,
   .contact-grid,
   .registration-grid {
     grid-template-columns: 1fr;
@@ -982,8 +987,8 @@ img {
   }
 
   .person-image-wrap {
-    width: 72px;
-    height: 72px;
+    width: 58px;
+    height: 58px;
   }
 
   .footer-inner {
@@ -996,5 +1001,9 @@ img {
   .person-card {
     padding: 22px;
     border-radius: 22px;
+  }
+
+  .person-card {
+    padding: 14px;
   }
 }

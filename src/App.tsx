@@ -15,9 +15,11 @@ import {
 const DATASET = {
   name: 'XPlainVerse',
   repoId: 'Abhijeet8901/XPlainVerse',
-  totalImages: '560,000',
-  totalReal: '180,000',
-  totalFake: '380,000',
+  totalImages: '760,000',
+  trainValImages: '560,000',
+  trainValReal: '180,000',
+  trainValFake: '380,000',
+  testImages: '200,000',
 };
 
 const SITE = {
@@ -31,6 +33,7 @@ const SITE = {
 const LINKS = {
   dataset: 'https://huggingface.co/datasets/Abhijeet8901/XPlainVerse',
   baseline: 'https://github.com/Abhijeet8901/XPlainVerse-ACMChallenge',
+  codabench: '',
   registrationForm: 'https://forms.office.com/r/gWypG9JGpe',
   eula: 'docs/EULA_Explainable_Deepfake_Detection_Challenge_2026.pdf',
   contactAbhinav: 'mailto:Abhinav.dhall@monash.edu',
@@ -67,12 +70,14 @@ type Resource = {
 const datasetBreakdown = [
   { split: 'Training', images: '450,000', real: '130,000', fake: '320,000' },
   { split: 'Validation', images: '110,000', real: '50,000', fake: '60,000' },
+  { split: 'Test', images: DATASET.testImages, real: 'Hidden', fake: 'Hidden' },
 ];
 
 const heroHighlights = [
   { label: 'Training split', value: '450,000 images' },
   { label: 'Validation split', value: '110,000 images' },
-  { label: 'Submission fields', value: 'Label + complex + simple explanations' },
+  { label: 'Test split', value: `${DATASET.testImages} images` },
+  { label: 'Submission fields', value: 'Detection + complex + simple explanations' },
 ];
 
 const metadataFields: LabelValue[] = [
@@ -98,8 +103,6 @@ const accessSteps = [
   'After approval, download XPlainVerse from Hugging Face using the command below.',
 ];
 
-const submissionExample = `{"sample_id":"000001","label":"fake","complex_explanation":"...","simple_explanation":"..."}`;
-
 const explanationTracks = [
   {
     title: 'Complex explanation',
@@ -112,6 +115,24 @@ const explanationTracks = [
     tag: 'Clear and concise',
     text:
       'A shorter and more accessible explanation that preserves the key reason behind the decision without carrying every low-level detail from the complex explanation.',
+  },
+];
+
+const submissionFormatRows = [
+  {
+    file: 'detection.jsonl',
+    rows: 'One row for every final-test image.',
+    fields: 'id, pred_label where 0 = real and 1 = fake.',
+  },
+  {
+    file: 'complex.jsonl',
+    rows: 'Rows for the explanation-evaluation subset.',
+    fields: 'id, complex_explanation.',
+  },
+  {
+    file: 'simple.jsonl',
+    rows: 'Rows for the same explanation-evaluation subset.',
+    fields: 'id, simple_explanation.',
   },
 ];
 
@@ -217,7 +238,7 @@ const resources: Resource[] = [
   {
     icon: Database,
     title: 'XPlainVerse Dataset',
-    text: 'Official Hugging Face release of XPlainVerse, including the current training and validation splits, paired explanation annotations, and manifest metadata.',
+    text: 'Official Hugging Face release of XPlainVerse, including training and validation data, paired explanation annotations, manifest metadata, and the final-test image release.',
     href: LINKS.dataset,
     linkLabel: 'Open dataset',
   },
@@ -227,6 +248,13 @@ const resources: Resource[] = [
     text: 'Official challenge repository with the public evaluation bundle, environment files, and baseline-facing resources for the explanation task.',
     href: LINKS.baseline,
     linkLabel: 'Open code and baselines',
+  },
+  {
+    icon: ClipboardPenLine,
+    title: 'Codabench Platform',
+    text: 'Official challenge submission and leaderboard platform for the final evaluation phase.',
+    href: LINKS.codabench,
+    linkLabel: 'Open Codabench',
   },
 ];
 
@@ -340,16 +368,19 @@ const datasetLayout = `XPlainVerse/
 |   |   '-- real/
 |   '-- simple_explanations/
 |       '-- fake/
-'-- val/
+|-- val/
+|   |-- manifest.jsonl
+|   |-- images/
+|   |   |-- fake/
+|   |   '-- real/
+|   |-- complex_explanations/
+|   |   |-- fake/
+|   |   '-- real/
+|   '-- simple_explanations/
+|       '-- fake/
+'-- test/
     |-- manifest.jsonl
-    |-- images/
-    |   |-- fake/
-    |   '-- real/
-    |-- complex_explanations/
-    |   |-- fake/
-    |   '-- real/
-    '-- simple_explanations/
-        '-- fake/`;
+    '-- images/`;
 
 const manifestExample = `{"label":"fake","image_path":"train/images/fake/00023c53a28055f94cc742f4.png","complex_explanation_path":"train/complex_explanations/fake/00023c53a28055f94cc742f4.json","simple_explanation_path":"train/simple_explanations/fake/00023c53a28055f94cc742f4.json"}`;
 
@@ -536,10 +567,9 @@ function App() {
               </p>
 
               <p className="hero-subtext">
-                The current release includes the training and validation splits of{' '}
-                <strong>{DATASET.name}</strong>, together with complex explanation
-                annotations, released simple explanations for fake samples,
-                evaluation assets, and manifest metadata for each sample.
+                The current release includes training and validation data for{' '}
+                <strong>{DATASET.name}</strong> with explanation annotations, plus the
+                final-test image split, evaluation assets, and manifest metadata.
               </p>
 
               <div className="hero-actions">
@@ -621,10 +651,11 @@ function App() {
               </p>
               <p>
                 The current release provides <strong>{DATASET.totalImages}</strong>{' '}
-                images across the training and validation splits, together with paired
-                explanation annotations and manifest metadata for each sample. This
-                supports both predictive evaluation and analysis of how models justify
-                their decisions.
+                images across the training, validation, and test splits. Training and
+                validation samples include paired explanation annotations and manifest
+                metadata, while the test split is released for final challenge
+                submission. This supports both predictive evaluation and analysis of
+                how models justify their decisions.
               </p>
             </article>
           </div>
@@ -647,12 +678,14 @@ function App() {
                 <p>
                   For both tasks, we use <strong>{DATASET.name}</strong>. The dataset contains{' '}
                   <strong>{DATASET.totalImages}</strong> images across the currently
-                  released training and validation splits, including{' '}
-                  <strong>{DATASET.totalReal}</strong> real and{' '}
-                  <strong>{DATASET.totalFake}</strong> fake images. Each sample is
-                  accompanied by the metadata needed to locate the image and its paired
-                  explanation file, supporting both detection and explanation
-                  experiments.
+                  released training, validation, and test splits. The released training
+                  and validation splits contain <strong>{DATASET.trainValImages}</strong>{' '}
+                  images, including <strong>{DATASET.trainValReal}</strong> real and{' '}
+                  <strong>{DATASET.trainValFake}</strong> fake images; the real/fake
+                  composition of the final test split is not disclosed. Each released
+                  sample is accompanied by the metadata needed to locate the image, and
+                  training/validation samples include paired explanation files for
+                  development and validation.
                 </p>
 
                 <table className="data-table dense-table">
@@ -677,23 +710,22 @@ function App() {
                 </table>
 
                 <p className="inline-note">
-                  The current public release includes the train and validation splits.
-                  The test set will be released later.
+                  The test split is released for challenge submission with hidden
+                  labels and hidden reference explanations.
                 </p>
               </article>
 
               <article className="content-card prose-card detail-section-block">
                 <h3>Dataset Structure</h3>
                 <p>
-                  Each split contains an <code>images</code> directory, a paired{' '}
-                  <code>complex_explanations</code> directory, a{' '}
-                  <code>simple_explanations</code> directory, and a{' '}
+                  Training and validation splits contain an <code>images</code>{' '}
+                  directory, paired <code>complex_explanations</code> and{' '}
+                  <code>simple_explanations</code> directories, and a{' '}
                   <code>manifest.jsonl</code> file. Complex explanations are organized
                   for both <code>fake</code> and <code>real</code> images, while simple
-                  explanations are only provided for <code>fake</code>. Each
-                  explanation JSON corresponds to the image with the same filename
-                  stem, making it easy to pair visual samples with their grounded
-                  textual annotations.
+                  explanations are only provided for <code>fake</code>. The test split
+                  contains a <code>manifest.jsonl</code> file and a flat{' '}
+                  <code>images</code> directory for final submission.
                 </p>
 
                 <pre className="code-card">
@@ -704,9 +736,9 @@ function App() {
               <article className="content-card prose-card detail-section-block">
                 <h3>Metadata Details</h3>
                 <p>
-                  Each line in <code>manifest.jsonl</code> stores the label and relative
-                  paths needed to load an image together with its complex and simple
-                  explanation files.
+                  For training and validation, each line in <code>manifest.jsonl</code>{' '}
+                  stores the label and relative paths needed to load an image together
+                  with its complex and simple explanation files.
                 </p>
 
                 <LabelValueList items={metadataFields} />
@@ -714,6 +746,11 @@ function App() {
                 <pre className="code-card code-compact">
                   <code>{manifestExample}</code>
                 </pre>
+
+                <p className="inline-note">
+                  The final-test manifest is used to identify released test images.
+                  Ground-truth labels and reference explanations are held out.
+                </p>
               </article>
 
               <article className="content-card prose-card detail-section-block">
@@ -767,7 +804,7 @@ function App() {
                   This is the authenticity classification task of the challenge.
                   Participants are expected to develop their methods using the released
                   training and validation splits of XPlainVerse, and submit predictions
-                  for the official test set when it is released.
+                  for the released final test set.
                 </p>
 
                 <p>
@@ -834,15 +871,40 @@ function App() {
                   reports both track-specific scores and overall explanation scores.
                 </p>
 
-                <pre className="code-card code-compact">
-                  <code>{submissionExample}</code>
-                </pre>
-
                 <p className="inline-note">
-                  The explanation submission for each sample should include the
-                  authenticity label, one complex explanation, and one simple
-                  explanation.
+                  The official submission package is split into separate detection,
+                  complex explanation, and simple explanation files.
                 </p>
+              </article>
+
+              <article className="content-card prose-card task-detail-card">
+                <h3>Submission Format</h3>
+                <p>
+                  Submissions should be provided as JSONL files. The <code>id</code>{' '}
+                  value must exactly match the released test image filename, including
+                  the file extension.
+                </p>
+
+                <table className="data-table dense-table">
+                  <thead>
+                    <tr>
+                      <th>File</th>
+                      <th>Rows</th>
+                      <th>Required fields</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {submissionFormatRows.map((row) => (
+                      <tr key={row.file}>
+                        <td>
+                          <code>{row.file}</code>
+                        </td>
+                        <td>{row.rows}</td>
+                        <td>{row.fields}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </article>
             </div>
           </div>
