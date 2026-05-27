@@ -33,7 +33,7 @@ const SITE = {
 const LINKS = {
   dataset: 'https://huggingface.co/datasets/Abhijeet8901/XPlainVerse',
   baseline: 'https://github.com/Abhijeet8901/XPlainVerse-ACMChallenge',
-  codabench: '',
+  codabench: 'https://www.codabench.org/competitions/16461/',
   registrationForm: 'https://forms.office.com/r/gWypG9JGpe',
   eula: 'docs/EULA_Explainable_Deepfake_Detection_Challenge_2026.pdf',
   contactAbhinav: 'mailto:Abhinav.dhall@monash.edu',
@@ -127,12 +127,12 @@ const submissionFormatRows = [
   },
   {
     file: 'complex.jsonl',
-    rows: 'Rows for the explanation-evaluation subset.',
+    rows: 'One row for every final-test image; scored on a hidden 10,000-sample explanation subset.',
     fields: 'id, complex_explanation.',
   },
   {
     file: 'simple.jsonl',
-    rows: 'Rows for the same explanation-evaluation subset.',
+    rows: 'One row for every final-test image; scored on the same hidden explanation subset.',
     fields: 'id, simple_explanation.',
   },
 ];
@@ -684,7 +684,7 @@ function App() {
                   </a>
                 ) : (
                   <span className="button button-secondary button-disabled">
-                    Codabench coming soon
+                    Codabench link unavailable
                   </span>
                 )}
                 <a
@@ -1002,8 +1002,9 @@ function App() {
               <article className="content-card prose-card detail-section-block">
                 <h3>Codabench Submission</h3>
                 <p>
-                  Official final-test submissions will be handled through Codabench.
-                  The platform link will be added here when submissions open.
+                  Official final-test submissions are handled through Codabench.
+                  Teams may submit once per day and up to 10 times in total during
+                  the final phase.
                 </p>
                 <p>
                   Each team can have only one public leaderboard entry. Teams may
@@ -1021,7 +1022,7 @@ function App() {
                       Submit on Codabench <ArrowRight size={18} />
                     </a>
                   ) : (
-                    <span className="status-pill large">Codabench coming soon</span>
+                    <span className="status-pill large">Codabench link unavailable</span>
                   )}
                 </div>
               </article>
