@@ -1264,7 +1264,7 @@ function App() {
               </article>
 
               <article className="content-card prose-card detail-section-block">
-                <h3>Overall Explanation Score</h3>
+                <h3>Explanation Score</h3>
                 <p>
                   Task 2 combines the complex and simple tracks on the same
                   10,000-sample explanation-evaluation subset.
