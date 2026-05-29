@@ -163,7 +163,7 @@ const submissionPolicyRows = [
 const submissionScoreRows = [
   {
     metric: 'Task 1',
-    summary: 'Detection F1 and detection accuracy over all final-test images.',
+    summary: 'Detection macro F1 and detection accuracy over all final-test images.',
   },
   {
     metric: 'Task 2',
@@ -173,6 +173,11 @@ const submissionScoreRows = [
   {
     metric: 'Explanation score',
     summary: '(complex_bert_f1 + simple_overall_score) / 2.',
+  },
+  {
+    metric: 'Overall score',
+    summary:
+      '(detection_macro_f1 + explanation_score) / 2. The leaderboard is sorted by this score.',
   },
 ];
 
@@ -187,9 +192,9 @@ const submissionPackageLayout = `submission.zip
 
 const detectionMetricItems = [
   {
-    name: 'detection_f1',
+    name: 'detection_macro_f1',
     text:
-      'F1 score for the fake class, computed over all final-test images.',
+      'Macro F1 over the real and fake classes, computed over all final-test images.',
   },
   {
     name: 'detection_accuracy',
@@ -239,7 +244,7 @@ const simpleMetricItems = [
   },
 ];
 
-const detectionMetricFormula = `detection_f1 = F1(fake)
+const detectionMetricFormula = `detection_macro_f1 = macro_f1(real, fake)
 detection_accuracy = correct_labels / total_images`;
 
 const complexMetricFormula = `complex_entity_f1 = harmonic_mean(entity_precision, entity_recall)
@@ -259,6 +264,9 @@ simple_overall_score =
 
 const explanationMetricFormula = `explanation_score =
   (complex_bert_f1 + simple_overall_score) / 2`;
+
+const overallMetricFormula = `overall_score =
+  (detection_macro_f1 + explanation_score) / 2`;
 
 const validationBaselineRows = [
   {
@@ -1112,7 +1120,8 @@ function App() {
                 <h3>Scoring Summary</h3>
                 <p>
                   The leaderboard uses standard detection metrics for Task 1 and the
-                  combined explanation score for Task 2.
+                  combined explanation score for Task 2. The public leaderboard is
+                  sorted by the overall score, which combines both parts.
                 </p>
 
                 <table className="data-table dense-table">
@@ -1263,6 +1272,18 @@ function App() {
 
                 <pre className="code-card">
                   <code>{explanationMetricFormula}</code>
+                </pre>
+              </article>
+
+              <article className="content-card prose-card detail-section-block">
+                <h3>Overall Score</h3>
+                <p>
+                  The main leaderboard score combines detection performance with the
+                  explanation score.
+                </p>
+
+                <pre className="code-card">
+                  <code>{overallMetricFormula}</code>
                 </pre>
               </article>
 
