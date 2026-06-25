@@ -171,7 +171,7 @@ const submissionScoreRows = [
       'Explanation score on the 10,000-sample explanation-evaluation subset.',
   },
   {
-    metric: 'Explanation score',
+    metric: 'Leaderboard explanation score',
     summary: '(complex_bert_f1 + simple_overall_score) / 2.',
   },
   {
@@ -260,11 +260,11 @@ simple_overall_score =
   0.7 * simple_bert_f1 +
   0.3 * simple_sle_norm`;
 
-const explanationMetricFormula = `reference_explanation_score =
+const explanationMetricFormula = `leaderboard_explanation_score =
   (complex_bert_f1 + simple_overall_score) / 2
 
 final_explanation_score =
-  0.4 * reference_explanation_score +
+  0.4 * leaderboard_explanation_score +
   0.6 * grounding_score`;
 
 const overallMetricFormula = `overall_score =
@@ -1149,7 +1149,7 @@ function App() {
                   reporting, including <code>complex_entity_f1</code>,{' '}
                   <code>complex_evidence_f1</code>, and{' '}
                   <code>grounding_score</code>. The final explanation score combines
-                  40% reference-based explanation score and 60% LLM-based grounding
+                  40% leaderboard explanation score and 60% LLM-based grounding
                   score.
                 </p>
               </article>
