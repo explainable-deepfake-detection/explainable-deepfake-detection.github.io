@@ -220,9 +220,9 @@ const complexMetricItems = [
       'Additional final-reporting metric. Qwen 3.5 4B extracts evidence claims from both the ground-truth explanation and the predicted explanation, checks coverage in both directions, and combines those directional scores into an F1.',
   },
   {
-    name: 'complex_overall_score',
+    name: 'grounding_score',
     text:
-      'Additional final-reporting score: 30% semantic similarity, 40% entity overlap, and 30% evidence overlap.',
+      'Additional final-reporting score for the top 5 teams: the average of complex_entity_f1 and complex_evidence_f1. This is the LLM-based component of the final explanation score.',
   },
 ];
 
@@ -250,10 +250,8 @@ detection_accuracy = correct_labels / total_images`;
 const complexMetricFormula = `complex_entity_f1 = harmonic_mean(entity_precision, entity_recall)
 complex_evidence_f1 = harmonic_mean(evidence_precision, evidence_recall)
 
-complex_overall_score =
-  0.3 * complex_bert_f1 +
-  0.4 * complex_entity_f1 +
-  0.3 * complex_evidence_f1`;
+grounding_score =
+  (complex_entity_f1 + complex_evidence_f1) / 2`;
 
 const simpleMetricFormula = `simple_sle_norm = clip(simple_sle_score, -1, 4)
 simple_sle_norm = (simple_sle_norm + 1) / 5
@@ -262,8 +260,12 @@ simple_overall_score =
   0.7 * simple_bert_f1 +
   0.3 * simple_sle_norm`;
 
-const explanationMetricFormula = `explanation_score =
-  (complex_bert_f1 + simple_overall_score) / 2`;
+const explanationMetricFormula = `reference_explanation_score =
+  (complex_bert_f1 + simple_overall_score) / 2
+
+final_explanation_score =
+  0.4 * reference_explanation_score +
+  0.6 * grounding_score`;
 
 const overallMetricFormula = `overall_score =
   (detection_macro_f1 + explanation_score) / 2`;
@@ -1146,7 +1148,9 @@ function App() {
                   teams and compute the complete complex-explanation metrics for final
                   reporting, including <code>complex_entity_f1</code>,{' '}
                   <code>complex_evidence_f1</code>, and{' '}
-                  <code>complex_overall_score</code>.
+                  <code>grounding_score</code>. The final explanation score combines
+                  40% reference-based explanation score and 60% LLM-based grounding
+                  score.
                 </p>
               </article>
             </div>
@@ -1201,7 +1205,7 @@ function App() {
                   The public Codabench leaderboard uses <code>complex_bert_f1</code>{' '}
                   for complex explanations. <code>complex_entity_f1</code>,{' '}
                   <code>complex_evidence_f1</code>, and{' '}
-                  <code>complex_overall_score</code> are additional final-reporting
+                  <code>grounding_score</code> are additional final-reporting
                   metrics for the top 5 teams, not the full public leaderboard score.
                 </p>
 
