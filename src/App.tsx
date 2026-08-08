@@ -35,7 +35,7 @@ const LINKS = {
   baseline: 'https://github.com/Abhijeet8901/XPlainVerse-ACMChallenge',
   codabench: 'https://www.codabench.org/competitions/16461/',
   registrationForm: 'https://forms.office.com/r/gWypG9JGpe',
-  eula: 'docs/EULA_Explainable_Deepfake_Detection_Challenge_2026.pdf',
+  eula: 'docs/XPlainVerse_EULA.pdf',
   contactAbhinav: 'mailto:Abhinav.dhall@monash.edu',
   contactAbhijeet: 'mailto:abhijeet.narang1@monash.edu',
 };
